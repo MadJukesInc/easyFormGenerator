@@ -174,7 +174,7 @@
 
       module.locked = false;
       return value;
-    });
+    }, entry.name);
 
     module.setters = declaration.setters;
     module.execute = declaration.execute;
@@ -288,7 +288,7 @@
       entry.esModule = {};
       
       // don't trigger getters/setters in environments that support them
-      if (typeof exports == 'object' || typeof exports == 'function') {
+        if ((typeof exports == 'object' || typeof exports == 'function') && exports !== global) {
         if (getOwnPropertyDescriptor) {
           var d;
           for (var p in exports)
@@ -444,9 +444,62 @@
   // etc UMD / module pattern
 })*/
 
-(['1'], [], function($__System) {
+(["1"], [], function ($__System) {
 
-$__System.registerDynamic("3", [], true, function(require, exports, module) {
+    (function () {
+        var loader = $__System;
+
+        if (typeof window != 'undefined' && typeof document != 'undefined' && window.location)
+            var windowOrigin = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+
+        loader.set('@@cjs-helpers', loader.newModule({
+            getPathVars: function (moduleId) {
+                // remove any plugin syntax
+                var pluginIndex = moduleId.lastIndexOf('!');
+                var filename;
+                if (pluginIndex != -1)
+                    filename = moduleId.substr(0, pluginIndex);
+                else
+                    filename = moduleId;
+
+                var dirname = filename.split('/');
+                dirname.pop();
+                dirname = dirname.join('/');
+
+                if (filename.substr(0, 8) == 'file:///') {
+                    filename = filename.substr(7);
+                    dirname = dirname.substr(7);
+
+                    // on windows remove leading '/'
+                    if (isWindows) {
+                        filename = filename.substr(1);
+                        dirname = dirname.substr(1);
+                    }
+                }
+                else if (windowOrigin && filename.substr(0, windowOrigin.length) === windowOrigin) {
+                    filename = filename.substr(windowOrigin.length);
+                    dirname = dirname.substr(windowOrigin.length);
+                }
+
+                return {
+                    filename: filename,
+                    dirname: dirname
+                };
+            }
+        }));
+    })();
+
+    $__System.register("2", [], function (_export) {
+        "use strict";
+
+        return {
+            setters: [],
+            execute: function () {
+                _export("default", window.angular);
+            }
+        };
+    });
+    $__System.registerDynamic("3", [], true, function ($__require, exports, module) {
   ;
   var global = this,
       __define = global.define;
@@ -460,7 +513,185 @@ $__System.registerDynamic("3", [], true, function(require, exports, module) {
   return module.exports;
 });
 
-$__System.registerDynamic("7", [], true, function(require, exports, module) {
+    $__System.register('4', ['3'], function (_export) {
+        'use strict';
+
+        var easyFormConfig, EASY_FORM_VERSION_NAME, EASY_FORM_VERSION_VALUE, ACTIVE_MODAL_ANIMATION;
+
+        function easyFromConfig(easyFormSteWayConfigProvider) {
+            //enable/disable easy form modal animation
+            //HERE : disabling animation due to angular bootstrap backdrop bug with angular >= 1.4
+            easyFormSteWayConfigProvider.setModalAnimation(ACTIVE_MODAL_ANIMATION);
+        }
+
+        return {
+            setters: [function (_) {
+                easyFormConfig = _['default'];
+            }],
+            execute: function () {
+                EASY_FORM_VERSION_NAME = 'easyFormGenVersion';
+                EASY_FORM_VERSION_VALUE = easyFormConfig.stepway.version;
+                ACTIVE_MODAL_ANIMATION = false;
+                easyFromConfig.$inject = ['easyFormSteWayConfigProvider'];
+
+                _export('default', easyFromConfig);
+
+                _export('EASY_FORM_VERSION_NAME', EASY_FORM_VERSION_NAME);
+
+                _export('EASY_FORM_VERSION_VALUE', EASY_FORM_VERSION_VALUE);
+            }
+        };
+    });
+    $__System.register("5", [], function (_export) {
+        "use strict";
+
+        var richTextTemplate, blankTemplate, subTitleTemplate, basicSelectTemplate, groupedSelectTemplate, datepickerTemplate, validationTemplate;
+        return {
+            setters: [],
+            execute: function () {
+                richTextTemplate = "<text-angular name=\"{{id}}\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\tclass=\"richTextAngular\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-model=\"model[options.key || index]\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</text-angular>";
+                blankTemplate = "<div></div>";
+                subTitleTemplate = "<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h4 class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{options.templateOptions.placeholder}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h4><hr/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>";
+                basicSelectTemplate = " <ol  class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\" \n\t\t\t\t\t\t\t\t\tng-model=\"model[options.key || index]\"  \n\t\t\t\t\t\t\t\t\t\tid=\"{{id}}\"  \n\t\t\t\t\t\t\t\t\tdisabled=\"options.templateOptions.options.length === 0\">  \n\t\t\t\t\t\t\t\t\t\t<li class=\"nya-bs-option\" nya-bs-option=\"option in options.templateOptions.options\">  \n\t\t\t\t\t\t\t\t\t\t\t<a>{{option.name}}</a> \n\t\t\t\t\t\t\t\t\t\t</li>  \n\t\t\t\t\t\t\t\t\t</ol>    ";
+                groupedSelectTemplate = "<ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-model=\"model[options.key || index]\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdata-live-search=\"true\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdisabled=\"options.templateOptions.options.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<li nya-bs-option=\"option in  options.templateOptions.options group by option.group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"dropdown-header\">{{$group}}</span> \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span>{{option.name}}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"glyphicon glyphicon-ok check-mark\"></span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</ol>";
+                datepickerTemplate = "\t<input  id=\"{{id}}\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tclass=\"form-control\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-click=\"open($event)\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-model=\"model[options.key  || index]\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tis-open=\"to.isOpen\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-click=\"to.isOpen = true\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdatepicker-options=\"to.datepickerOptions\" />";
+                validationTemplate = "\n\t<div class=\"formly-template-wrapper form-group\"\n\t\t\t\t\t\tng-class=\"{'has-error': options.validation.errorExistsAndShouldBeVisible}\">\n\t\t\t\t<formly-transclude></formly-transclude>\n\t\t\t\t<div class=\"validation\"\n\t\t\t\t\t\t\tng-if=\"options.validation.errorExistsAndShouldBeVisible\"\n\t\t\t\t\t\t\tng-messages=\"options.formControl.$error\">\n\t\t\t\t\t<div ng-messages-include=\"validation.html\"></div>\n\t\t\t\t\t<div ng-message=\"{{::name}}\" ng-repeat=\"(name, message) in ::options.validation.messages\">\n\t\t\t\t\t\t{{message(options.formControl.$viewValue, options.formControl.$modelValue, this)}}\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>";
+
+                _export("richTextTemplate", richTextTemplate);
+
+                _export("blankTemplate", blankTemplate);
+
+                _export("subTitleTemplate", subTitleTemplate);
+
+                _export("basicSelectTemplate", basicSelectTemplate);
+
+                _export("groupedSelectTemplate", groupedSelectTemplate);
+
+                _export("datepickerTemplate", datepickerTemplate);
+
+                _export("validationTemplate", validationTemplate);
+            }
+        };
+    });
+    $__System.register('6', ['5'], function (_export) {
+        /* global angular */
+        'use strict';
+
+        var richTextTemplate, blankTemplate, subTitleTemplate, basicSelectTemplate, groupedSelectTemplate, datepickerTemplate, validationTemplate;
+
+        function formlyConfig(formlyConfigProvider) {
+
+            formlyConfigProvider.setType({
+                name: 'richEditor',
+                //wrapper: ['bootstrapLabel', 'bootstrapHasError'],
+                template: richTextTemplate
+            });
+
+            formlyConfigProvider.setType({
+                name: 'blank',
+                template: blankTemplate
+            });
+
+            formlyConfigProvider.setType({
+                name: 'subTitle',
+                template: subTitleTemplate
+            });
+
+            formlyConfigProvider.setType({
+                name: 'basicSelect',
+                template: basicSelectTemplate
+            });
+
+            formlyConfigProvider.setType({
+                name: 'groupedSelect',
+                template: groupedSelectTemplate
+            });
+
+            ////////////////////////////
+            // angular UI date picker
+            ////////////////////////////
+            // thx Kent C. Dodds
+
+            var attributes = ['date-disabled', 'custom-class', 'show-weeks', 'starting-day', 'init-date', 'min-mode', 'max-mode', 'format-day', 'format-month', 'format-year', 'format-day-header', 'format-day-title', 'format-month-title', 'year-range', 'shortcut-propagation', 'datepicker-popup', 'show-button-bar', 'current-text', 'clear-text', 'close-text', 'close-on-date-selection', 'datepicker-append-to-body'];
+
+            var bindings = ['datepicker-mode', 'min-date', 'max-date'];
+
+            var ngModelAttrs = {};
+
+            angular.forEach(attributes, function (attr) {
+                ngModelAttrs[camelize(attr)] = {attribute: attr};
+            });
+
+            angular.forEach(bindings, function (binding) {
+                ngModelAttrs[camelize(binding)] = {bound: binding};
+            });
+
+            formlyConfigProvider.setType({
+                name: 'datepicker',
+                template: datepickerTemplate,
+                wrapper: ['bootstrapLabel', 'bootstrapHasError'],
+                controller: ['$scope', function ($scope) {
+                    $scope.open = function ($event) {
+                        $event.preventDefault();
+                        $event.stopPropagation();
+                        $scope.opened = true;
+                    };
+                }],
+                defaultOptions: {
+                    ngModelAttrs: ngModelAttrs,
+                    templateOptions: {
+                        addonLeft: {
+                            'class': 'glyphicon glyphicon-calendar',
+                            onClick: function onClick(options, scope) {
+                                options.templateOptions.isOpen = !options.templateOptions.isOpen;
+                            }
+                        },
+                        onFocus: function onFocus($viewValue, $modelValue, scope) {
+                            scope.to.isOpen = !scope.to.isOpen;
+                        },
+                        datepickerOptions: {}
+                    }
+                }
+
+            });
+
+            /**
+             * wrappers to show validation errors
+             * without having to rewrite formly types
+             */
+            formlyConfigProvider.setWrapper([{
+                template: validationTemplate
+            }]);
+
+            function camelize(string) {
+                string = string.replace(/[\-_\s]+(.)?/g, function (match, chr) {
+                    return chr ? chr.toUpperCase() : '';
+                });
+                // Ensure 1st char is always lowercase
+                return string.replace(/^([A-Z])/, function (match, chr) {
+                    return chr ? chr.toLowerCase() : '';
+                });
+            }
+        }
+
+        return {
+            setters: [function (_) {
+                richTextTemplate = _.richTextTemplate;
+                blankTemplate = _.blankTemplate;
+                subTitleTemplate = _.subTitleTemplate;
+                basicSelectTemplate = _.basicSelectTemplate;
+                groupedSelectTemplate = _.groupedSelectTemplate;
+                datepickerTemplate = _.datepickerTemplate;
+                validationTemplate = _.validationTemplate;
+            }],
+            execute: function () {
+                formlyConfig.$inject = ['formlyConfigProvider'];
+
+                _export('default', formlyConfig);
+            }
+        };
+    });
+    $__System.registerDynamic("7", [], true, function ($__require, exports, module) {
   ;
   var global = this,
       __define = global.define;
@@ -530,7 +761,7 @@ $__System.registerDynamic("7", [], true, function(require, exports, module) {
   return module.exports;
 });
 
-$__System.registerDynamic("8", [], true, function(require, exports, module) {
+    $__System.registerDynamic("8", [], true, function ($__require, exports, module) {
   ;
   var global = this,
       __define = global.define;
@@ -600,7 +831,7 @@ $__System.registerDynamic("8", [], true, function(require, exports, module) {
   return module.exports;
 });
 
-$__System.registerDynamic("9", [], true, function(require, exports, module) {
+    $__System.registerDynamic("9", [], true, function ($__require, exports, module) {
   ;
   var global = this,
       __define = global.define;
@@ -670,7 +901,7 @@ $__System.registerDynamic("9", [], true, function(require, exports, module) {
   return module.exports;
 });
 
-$__System.registerDynamic("a", [], true, function(require, exports, module) {
+    $__System.registerDynamic("a", [], true, function ($__require, exports, module) {
   ;
   var global = this,
       __define = global.define;
@@ -740,7 +971,7 @@ $__System.registerDynamic("a", [], true, function(require, exports, module) {
   return module.exports;
 });
 
-$__System.registerDynamic("b", [], true, function(require, exports, module) {
+    $__System.registerDynamic("b", [], true, function ($__require, exports, module) {
   ;
   var global = this,
       __define = global.define;
@@ -810,7 +1041,7 @@ $__System.registerDynamic("b", [], true, function(require, exports, module) {
   return module.exports;
 });
 
-$__System.registerDynamic("c", [], true, function(require, exports, module) {
+    $__System.registerDynamic("c", [], true, function ($__require, exports, module) {
   ;
   var global = this,
       __define = global.define;
@@ -880,309 +1111,6 @@ $__System.registerDynamic("c", [], true, function(require, exports, module) {
   return module.exports;
 });
 
-$__System.registerDynamic("10", [], true, function(require, exports, module) {
-  ;
-  var global = this,
-      __define = global.define;
-  global.define = undefined;
-  var $Object = Object;
-  module.exports = {
-    create: $Object.create,
-    getProto: $Object.getPrototypeOf,
-    isEnum: {}.propertyIsEnumerable,
-    getDesc: $Object.getOwnPropertyDescriptor,
-    setDesc: $Object.defineProperty,
-    setDescs: $Object.defineProperties,
-    getKeys: $Object.keys,
-    getNames: $Object.getOwnPropertyNames,
-    getSymbols: $Object.getOwnPropertySymbols,
-    each: [].forEach
-  };
-  global.define = __define;
-  return module.exports;
-});
-
-$__System.registerDynamic("11", ["10"], true, function(require, exports, module) {
-  ;
-  var global = this,
-      __define = global.define;
-  global.define = undefined;
-  var $ = require("10");
-  module.exports = function defineProperty(it, key, desc) {
-    return $.setDesc(it, key, desc);
-  };
-  global.define = __define;
-  return module.exports;
-});
-
-$__System.registerDynamic("12", ["11"], true, function(require, exports, module) {
-  ;
-  var global = this,
-      __define = global.define;
-  global.define = undefined;
-  module.exports = {
-    "default": require("11"),
-    __esModule: true
-  };
-  global.define = __define;
-  return module.exports;
-});
-
-$__System.registerDynamic("13", ["12"], true, function(require, exports, module) {
-  ;
-  var global = this,
-      __define = global.define;
-  global.define = undefined;
-  "use strict";
-  var _Object$defineProperty = require("12")["default"];
-  exports["default"] = (function() {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor)
-          descriptor.writable = true;
-        _Object$defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-    return function(Constructor, protoProps, staticProps) {
-      if (protoProps)
-        defineProperties(Constructor.prototype, protoProps);
-      if (staticProps)
-        defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  })();
-  exports.__esModule = true;
-  global.define = __define;
-  return module.exports;
-});
-
-$__System.registerDynamic("14", [], true, function(require, exports, module) {
-  ;
-  var global = this,
-      __define = global.define;
-  global.define = undefined;
-  "use strict";
-  exports["default"] = function(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  };
-  exports.__esModule = true;
-  global.define = __define;
-  return module.exports;
-});
-
-$__System.registerDynamic("16", [], true, function(require, exports, module) {
-  ;
-  var global = this,
-      __define = global.define;
-  global.define = undefined;
-  module.exports = "<div class=\"modal-header\">\n\t\t<h3 class=\"modal-title greyText\">{{'SELECT_A_CTRL' | translate}}</h3>\n</div>\n<div class=\"modal-body\">\n\t<hr/>\n\t<div class=\"row\">\n\t\t<div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-filter\"></i>&nbsp; {{'SELECT_CTRL_IN_LIST' | translate}} :</h5>\n\t\t</div>\n\t\t<div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n\t\t\t<ol class=\"nya-bs-select col-xs-12 col-sm-12 col-md-12 col-lg-12\" ng-model=\"editControlModCtrl.modelNyaSelect\" data-live-search=\"false\">\n\t\t\t\t<li nya-bs-option=\"option in editControlModCtrl.nyaSelectFiltered.controls group by option.group\">\n\t\t\t\t\t<span class=\"dropdown-header greyText\">{{$group}}</span> <!-- group header cannot be searched -->\n\t\t\t\t\t<a ng-click=\"editControlModCtrl.selectThisControl(option.id)\">\n\t\t\t\t\t\t<span>{{ option.name }}</span> \n\t\t\t\t\t\t<span class=\"glyphicon glyphicon-ok check-mark\"></span>\n\t\t\t\t\t</a>\n\t\t\t\t</li>\n\t\t\t</ol>\n\t\t</div>\n\t</div>\n\t<hr/>\n\t<div ng-switch on=\"editControlModCtrl.nyaSelect.selectedControl\">\n\t\t<!--no control selected-->\n\t\t<div ng-switch-when=\"none\">\n\t\t\t<div class=\"row\">\n\t\t\t\t<div class=\"col-sm-12\">\n\t\t\t\t\t<h5 class=\"text-center texteRouge\"> <i class=\"fa fa-arrow-up\"></i>&nbsp; {{'SELECT_A_CTRL' | translate}}</h5>\n\t\t\t\t</div>                \n\t\t\t</div>\n\t\t</div>\n\t\t<!--empty (or blank) control -->\n\t\t<div ng-switch-when=\"empty\">\n\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div> \n\t\t\t\t\t<hr/>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-sm-12\">\n\t\t\t\t\t\t\t<h5 class=\"text-center greyText\">{{'COL_WILL_BE_BLANK' | translate}}</h5>\n\t\t\t\t\t\t</div>                \n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>                \n\t\t<!--header-->\n\t\t<div ng-switch-when=\"Header\">\n\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div> \n\t\t\t\t\t<hr/>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<div class=\"form-group\">\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t<h2 class=\"text-center\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</h2>\n\t\t\t\t\t\t\t\t\t<hr/>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>                    \n\t\t\t\t\t</div> \n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div> \n\t\t\t\t\t<hr/>\n\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'HEADER_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputHeaderTextUpdate\" placeholder=\"{{'ADD_EDIT_HEADER_HERE' | translate}}\">\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div> \n\t\t</div>\n\t\t<!--Subtitle-->\n\t\t<div ng-switch-when=\"Subtitle\">\n\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t</div> \n\t\t\t\t\t<hr/>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t<h4 class=\"text-center\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}</h4>\n\t\t\t\t\t\t\t\t\t\t\t<hr/>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>                    \n\t\t\t\t\t</div> \n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div> \n\t\t\t\t\t<hr/>\n\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t<label for=\"inputSubTitleTextUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'SUBTITLE_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\" id=\"inputSubTitleTextUpdate\" placeholder=\"{{'ADD_EDIT_SUBTIL_HERE' | translate}}\">\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div> \n\t\t</div>                \n\t\t<!-- TextInput -->\n\t\t<div ng-switch-when=\"TextInput\">\t\t\t\t\n\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div> \n\t\t\t\t\t<hr/>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t<label for=\"inputText\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" id=\"inputText\" placeholder=\"{{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}\">\n\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>                    \n\t\t\t\t\t</div> \n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div> \n\t\t\t\t\t<hr/>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t<label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\" id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t<label for=\"inputTextplaceholderUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'PLACEHOLDER' | translate}} :</label>\n\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\" id=\"inputTextplaceholderUpdate\" placeholder=\"{{'ADD_EDIT_PLACEHOLD' | translate}}\">\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}} :</label>\n\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div> \n\t\t</div>\n\t\t<!-- password -->\n\t\t<div ng-switch-when=\"Password\">\t\t\t\n\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<hr/>\n\t\t\t\t\t<div class=\"row\">    \n\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t<label for=\"inputPassword\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t<input type=\"password\" class=\"form-control\" id=\"inputPassword\" placeholder=\"{{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}\">\n\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>                    \n\t\t\t\t\t</div> \n\t\t\t\t</div>\n\t\t\t</div>  \n\n\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\" id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\n\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextplaceholderUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'PLACEHOLDER' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\" id=\"inputTextplaceholderUpdate\" placeholder=\"{{'ADD_EDIT_PLACEHOLD' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\n\n\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div> \n\t\t</div>   \n\n\t\t\t\t<div ng-switch-when=\"Email\">\n\t\t\t\t\t\t\t\t<!-- password -->\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">    \n\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputEmail\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" id=\"inputEmail\" placeholder=\"{{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t</div>                    \n\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>  \n\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\" id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextplaceholderUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'PLACEHOLDER' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\" id=\"inputTextplaceholderUpdate\" placeholder=\"{{'ADD_EDIT_PLACEHOLD' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\t\t\t\t</div> \n\n\t\t\t\t<div ng-switch-when=\"Date\">\n\t\t\t\t\t\t\t\t<!-- datetimepicker (input type date not ok in all browsers) -->\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputDate\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t<div class=\"input-group\" >\n\t\t\t\t\t\t\t<span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" datepicker-popup=\"{{editControlModCtrl.nyaSelect.temporyConfig.datepickerPopup}}\" ng-model=\"editControlModCtrl.demodt.dt\" is-open=\"editControlModCtrl.demodt.opened\" min-date=\"editControlModCtrl.demodt.minDate\" max-date=\"'2099-12-31'\" datepicker-options=\"editControlModCtrl.dateOptions\" date-disabled=\"editControlModCtrl.disabled(date, mode)\"  close-text=\"Close\" ng-click=\"editControlModCtrl.open($event)\" />\n\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t</p>         \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>                    \n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DATE_FORMAT' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.datepickerPopup\" id=\"dateformatSelect\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"nya-bs-option\" nya-bs-option=\"dateformat in editControlModCtrl.demodt.formats\" value=\"dateformat\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a>{{dateformat}}</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</ol>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\" id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\t\t\t\t</div>                         \n\n\t\t\t\t<div ng-switch-when=\"Texarea\">\n\t\t\t\t\t\t\t\t<!-- textarea -->\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"textArea\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<textarea class=\"form-control\" ng-model=\"model[options.key]\" rows=\"3\" id=\"textArea\"></textarea> \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>          \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>                    \n\n\t\t\t\t\t\t\t\t\t\t\t\t</div>                    \n\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\" id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\t\t\t\t</div> \n\n\t\t\t\t<div ng-switch-when=\"RichTextEditor\">\n\t\t\t\t\t\t\t\t<!-- TextInput -->\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"RichTextEditor\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<text-angular ng-model=\"editControlModCtrl.model[options.key]\"></text-angular>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>                    \n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<!-- required can't be applied to rich text editor (textAngular) right now -->\n\t\t\t\t\t\t\t\t\t\t<!--<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">Required :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>                            \n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>-->\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\t\t\t\t</div>                \n\n\t\t\t\t<div ng-switch-when=\"Radio\">\n\t\t\t\t\t\t\t\t<!-- radios -->\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>                           \n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"basicSelect\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"radio\" ng-repeat=\"radioRow in editControlModCtrl.radioRowCollection.rows\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"radio\" name=\"optionsRadios\" id=\"{{'optionsRadio-' + $index}}\" value=\"$index\" checked=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{radioRow.option}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>                            \n\n\t\t\t\t\t\t\t\t\t\t\t\t</div>                    \n\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-3 col-md-3\">                                       \n\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"radioRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'ADD_NEW_RADIO' | translate}} :</label>  \n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-sm-9 col-xs-9 col-md-9 col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" id=\"inputAddNewRadioOption\" placeholder=\"{{'ADD_RADIO_PLACEHOLD' | translate}}\" ng-model=\"editControlModCtrl.newOptionRadio.saisie\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-sm-3 col-xs-3 col-md-3 col-lg-3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.addNewOptionRadio()\">{{'ADD' | translate}}</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-3 col-md-3\">                                       \n\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"radioRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'EDIT_REMOVE_RADIO' | translate}} :</label>  \n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class-\"col-lg-12 col-md-12 col-sm-12 col-xs-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"container\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-show=\"editControlModCtrl.radioRowCollection.rows.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"text-center greyText\"><em>- {{'NO_RADIO_ADD_NEW' | translate}} -</em></h5>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>  \n\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table ng-if=\"editControlModCtrl.radioRowCollection.rows.length > 0\" class=\"table table-striped\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<thead>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"20\">{{'ORDER' | translate}}</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"55\">{{'OPTION' | translate}}</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"25\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"20\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"55\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input ng-model=\"editControlModCtrl.radioFilter\" placeholder=\"{{'SEARCH_4_OPTION' | translate}}\" class=\"input-sm form-control\" type=\"search\"/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"25\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</thead>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tbody>  \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr ng-repeat=\"radioRow in editControlModCtrl.radioRowCollection.rows | filter:radioFilter as radioRow\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"20\">{{$index}}</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"55\">{{radioRow.option}}</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"25\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"pull-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.upThisRadioRow($index)\"><i class=\"fa fa-arrow-up\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.downThisRadioRow($index)\"><i class=\"fa fa-arrow-down\"></i></button>    \n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-danger\" ng-click=\"editControlModCtrl.removeRadioRow($index)\"><i class=\"fa fa-trash-o\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>   \n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tbody>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\t\t\t\t\t\t\t\t\t\t\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\" id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\t\t\t\t</div>\n\n\t\t\t\t<div ng-switch-when=\"Checkbox\">\n\t\t\t\t\t\t\t\t<!-- checkbox -->\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/> \n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">                                \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkbox\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" id=\"checkBox\"> <span class=\"blackText\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}</span><span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>                   \n\n\t\t\t\t\t\t\t\t\t\t\t\t</div>                    \n\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\" id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\t\t\t\t</div>\n\n\t\t\t\t<div ng-switch-when=\"BasicSelect\">\n\n\t\t\t\t\t\t\t\t<!--  basic selects -->\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"basicSelect\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\" ng-model=\"editControlModCtrl.modelbasicSelect\" id=\"basicSelect\" disabled=\"editControlModCtrl.basicSelectRowCollection.rows.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"nya-bs-option\" nya-bs-option=\"basicSelectRow in editControlModCtrl.basicSelectRowCollection.rows\" value=\"$index\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a>{{basicSelectRow.option}}</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</ol>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>                    \n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-3 col-md-3\">                                       \n\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"basicSelectRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'ADD_NEW_OPTIONS' | translate}} :</label>  \n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-sm-9 col-xs-9 col-md-9 col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" id=\"inputAddNewBasicOption\" placeholder=\"{{'ADD_A_NEW_OPTION' | translate}}\" ng-model=\"editControlModCtrl.newOptionBasicSelect.saisie\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-sm-3 col-xs-3 col-md-3 col-lg-3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.addNewOptionBasicSelect()\">{{'ADD' | translate}}</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>                            \n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-3 col-md-3\">                                       \n\t\t\t\t\t\t\t\t\t\t\t\t\t<label  class=\" control-label greyText editPropertiesLabel\">{{'EDIT_REMOVE_OPTIONS' | translate}} :</label>  \n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class-\"col-lg-12 col-md-12 col-sm-12 col-xs-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"container\">\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-if=\"editControlModCtrl.basicSelectRowCollection.rows.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"text-center greyText\"><em>- {{'NO_OPTION_ADD_NEW' | translate}} -</em></h5>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>  \n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table ng-if=\"editControlModCtrl.basicSelectRowCollection.rows.length > 0\" class=\"table table-striped\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<thead>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"20\">{{'ORDER' | translate}}</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"55\">{{'OPTION' | translate}}</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"25\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"20\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"55\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input ng-model=\"basicSelectFilter\" placeholder=\"{{'SEARCH_4_OPTION' | translate}}\" class=\"input-sm form-control\" type=\"search\"/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"25\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</thead>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tbody>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr ng-repeat=\"basicSelectRow in editControlModCtrl.basicSelectRowCollection.rows | filter:basicSelectFilter as basicSelectRow\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"20\">{{$index}}</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"55\">{{basicSelectRow.option}}</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"25\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"pull-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.upThisRow($index)\"><i class=\"fa fa-arrow-up\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.downThisRow($index)\"><i class=\"fa fa-arrow-down\"></i></button>    \n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-danger\" ng-click=\"editControlModCtrl.removeRow($index)\"><i class=\"fa fa-trash-o\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>   \n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tbody>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<hr/>\n\n\n\t\t\t\t\t\t\t\t\t\t<!--<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">Required :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"checkboxCssCorrection\">&nbsp;</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" ng-model=\"nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div> -->                           \n\n\n\t\t\t\t\t\t\t\t\t\t\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\t\t\t\t\t\t\t\t\t\t\n\n\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div> \n\t\t\t\t</div>                \n\n\n\t\t\t\t<!-- grouped selects -->\n\t\t\t\t<div ng-switch-when=\"GroupedSelect\">\n\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t<div class=\"panel-body\">\t\t\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t<hr/>\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"select\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\" class=\"textControlLabel\">*</span></label>\n\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t<ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\" ng-model=\"modelGroupedSelect\" data-live-search=\"true\" disabled=\"editControlModCtrl.groupedSelectRowCollection.rows.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t<li nya-bs-option=\"groupedSelectRow in editControlModCtrl.groupedSelectRowCollection.rows group by groupedSelectRow.group\" value=\"$index\">\n\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"dropdown-header\">{{groupedSelectRow.group}}</span> \n\t\t\t\t\t\t\t\t\t\t\t\t<a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<span>{{groupedSelectRow.option}}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"glyphicon glyphicon-ok check-mark\"></span>\n\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t</ol>\n\t\t\t\t\t\t\t\t\t\t<p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>                    \n\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t<h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :</h5>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t<hr/>\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div class=\"col-lg-3 col-md-3\">                                       \n\t\t\t\t\t\t\t\t\t<label for=\"groupedSelectRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'ADD_NEW_OPTIONS' | translate}} :</label>  \n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"col-sm-9 col-xs-9 col-md-9 col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" id=\"inputAddNewGroupedOption\" placeholder=\"{{'ADD_A_NEW_OPTION' | translate}}\" ng-model=\"editControlModCtrl.newOptionGroupedSelect.saisie\">\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<div class=\"col-sm-3 col-xs-3 col-md-3 col-lg-3\">\n\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.addNewOptionGroupedSelect()\">{{'ADD' | translate}}</button>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div> \n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div class=\"col-lg-3 col-md-3\">                                       \n\t\t\t\t\t\t\t\t\t<label for=\"groupedSelectRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'ADD_NEW_GROUPS' | translate}} :</label>  \n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"col-sm-9 col-xs-9 col-md-9 col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t\t<input  id=\"inputAddNewGroupGroupedOption\" type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.newGroupGroupedSelect.saisie\" id=\"inputTextLabelUpdateGroupedSelect\" placeholder=\"{{'ADD_A_NEW_GROUP' | translate}}\">\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<div class=\"col-sm-3 col-xs-3 col-md-3 col-lg-3\">\n\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.addNewGroupToGroupedSelect()\">{{'ADD' | translate}}</button>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div class=\"col-lg-3 col-md-3\">                                       \n\t\t\t\t\t\t\t\t\t<label  class=\" control-label greyText editPropertiesLabel\">{{'EDIT_GROUPS_OPTIONS' | translate}} :</label>  \n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t<div class=\"col-lg-12 col-md-12 col-sm-12 col-xs-12\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"container\">\n\t\t\t\t\t\t\t\t\t\t\t<div ng-if=\"editControlModCtrl.groupedSelectRowCollection.rows.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t<h5 class=\"text-center greyText\"><em>- {{'NO_OPTION_ADD_NEW' | translate}} -</em></h5>\n\t\t\t\t\t\t\t\t\t\t\t</div>  \n\t\t\t\t\t\t\t\t\t\t\t<table ng-if=\"editControlModCtrl.groupedSelectRowCollection.rows.length > 0\" class=\"table table-striped\">\n\t\t\t\t\t\t\t\t\t\t\t\t<thead>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"20\">{{'ORDER' | translate}}</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"25\">{{'GROUP' | translate}}</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"30\">{{'OPTION' | translate}}</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"25\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"20\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"25\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"30\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input ng-model=\"editControlModCtrl.groupedSelectFilter\" placeholder=\"{{'SEARCH_4_OPTION' | translate}}\" class=\"input-sm form-control\" type=\"search\"/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<th st-ratio=\"25\"></th>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</thead>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<tbody>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<tr ng-repeat=\"groupedSelectRow in editControlModCtrl.groupedSelectRowCollection.rows | filter:editControlModCtrl.groupedSelectFilter as groupedSelectRow\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"20\">{{$index}}</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"25\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-if=\"editControlModCtrl.groupSelectGroupClick.showList === true\">          \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-if=\"editControlModCtrl.GroupedSelectGroups.list.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"text-left noGroupText\">- {{'NO_GROUP_ADD_NEW' | translate}} -</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-if=\"editControlModCtrl.GroupedSelectGroups.list.length > 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12 editGroupedSelectnyaSelect\" ng-model=\"groupedSelectRow.group\" id=\"modelGroupedOptionGroupedChoose\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdisabled=\"editControlModCtrl.GroupedSelectGroups.list.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"nya-bs-option\" nya-bs-option=\"GroupedSelectGroup in editControlModCtrl.GroupedSelectGroups.list\" value=\"GroupedSelectGroup\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a>{{GroupedSelectGroup}}</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</ol> \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-if=\"editControlModCtrl.groupSelectGroupClick.showList === false\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{groupedSelectRow.group}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"30\">{{groupedSelectRow.option}}</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td st-ratio=\"25\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"pull-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.upThisGroupedSelectRow($index)\"><i class=\"fa fa-arrow-up\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.downThisGroupedSelectRow($index)\"><i class=\"fa fa-arrow-down\"></i></button>  \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-warning\" ng-click=\"editControlModCtrl.showGroupListToChoose()\"><i class=\"fa fa-pencil-square-o\"></i> </button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-danger\" ng-click=\"editControlModCtrl.removeGroupedSelectRow($index)\"><i class=\"fa fa-trash-o\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>   \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</tbody>\n\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<hr/>\n\t\t\t\t\t\t\t<div class=\"marginTopFivepixels\"></div>\n\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t<label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t<div class=\"col-lg-9\">\n\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\" id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>                                              \n\t\t\t\t</div>  \n\t\t</div>\n</div>\n\n<div class=\"modal-footer\">\n\t\t<button class=\"btn btn-primary\" ng-class=\"{'disabled': editControlModCtrl.nyaSelect.selectedControl === 'none'}\" ng-click=\"editControlModCtrl.ok()\">{{'OK' | translate}}</button>\n\t\t<button class=\"btn btn-warning\" ng-click=\"editControlModCtrl.cancel()\">{{'CANCEL' | translate}}</button>\n</div>\n\n";
-  global.define = __define;
-  return module.exports;
-});
-
-$__System.registerDynamic("19", [], true, function(require, exports, module) {
-  ;
-  var global = this,
-      __define = global.define;
-  global.define = undefined;
-  module.exports = "<section id=\"pageWfEdit\">\n\t<div ng-init=\"\">\n\t\t<div class=\"container\">\n\t\t\t<section id=\"preview\">\n\t\t\t\t<div id=\"preview-content\">\n\t\t\t\t\t<div class=\"content-container\">\n\t\t\t\t\t\t<!-- taoster alert -->\n\t\t\t\t\t\t<toaster-container  toaster-options=\"{\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t'position-class': 'toast-top-full-width', \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t'extendedTimeout':500,\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t'timeOut':500,                          \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t}\">\n\t\t\t\t\t\t</toaster-container>\n\t\t\t\t\t\t<tabset justified=\"true\">\n\t\t\t\t\t\t\t<tab active=\"vm.tab.editTab.active\" heading=\"{{'EDIT_TAB' | translate}}\">\n\t\t\t\t\t\t\t\t<div class=\"row\">\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t<!-- STEP INDICATOR -->\n\t\t\t\t\t\t\t\t<div class=\"row stepwizardTopmargin\">\n\t\t\t\t\t\t\t\t\t<div class=\"col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"stepwizard\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row stepwizard-row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"stepwizard-step col-md-3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-circle\" ng-class=\"{'btn-primary': vm.configuration.stepIndicators[0], 'btn-default': !vm.configuration.stepIndicators[0]}\" >0</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p>{{'WIZARD_LINES' | translate}}</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"stepwizard-step col-md-3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-circle\" ng-class=\"{'btn-primary': vm.configuration.stepIndicators[1], 'btn-default': !vm.configuration.stepIndicators[1], 'disabled': (vm.configuration.configStepCounter < 1)}\"  >1</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p>{{'WIZARD_LAYOUT' | translate}}</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"stepwizard-step col-md-3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-default btn-circle\" ng-class=\"{'btn-primary': vm.configuration.stepIndicators[2], 'btn-default': !vm.configuration.stepIndicators[2], 'disabled': (vm.configuration.configStepCounter < 2)}\" >2</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p>{{'WIZARD_CONTROLS' | translate}}</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"stepwizard-step col-md-3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-default btn-circle\" ng-class=\"{'btn-primary': vm.configuration.stepIndicators[3], 'btn-default': !vm.configuration.stepIndicators[3], 'disabled': (vm.configuration.configStepCounter < 3)}\" >3</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p>{{'WIZARD_SAVE' | translate}}</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t<ul class=\"pager\">\n\t\t\t\t\t\t\t\t\t<li ng-class=\"{'disabled':vm.stepIndicators[0]}\">\n\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary customPagerButton\" ng-click=\"vm.previousConfigStep()\" >\n\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa fa-arrow-left fa-2x pull-left\"></i>\n\t\t\t\t\t\t\t\t\t\t\t<span class=\"pull-right\">{{'PAGER_PREVIOUS' | translate}}</span>\n\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t<li ng-class=\"{'disabled':vm.stepIndicators[3]}\">\n\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary customPagerButton\" ng-click=\"vm.nextConfigStep()\">\n\t\t\t\t\t\t\t\t\t\t\t<span class=\"pull-left\">{{'PAGER_NEXT' | translate}}</span>\n\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa fa-arrow-right fa-2x pull-right\"></i>\n\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t<div class=\"animate-switch-container\" ng-switch on=\"vm.configuration.listConfigStep[vm.configuration.configStepCounter]\">\n\t\t\t\t\t\t\t\t\t<div class=\"animate-switch\" ng-switch-when=\"init\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4\" >\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div id=\"commandPanel\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div  class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-heading\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h3 class=\"panel-title\"><i class=\"fa fa-keyboard-o\"></i>&nbsp;{{'COMMAND_PANEL' | translate}}</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"addNewLine\">{{'ADD_NEW_LINE' | translate}} :</span>&nbsp;\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" ng-click=\"vm.addNewline()\"><i class=\"fa fa-plus fa-1x\"></i></button>\t\t\t\t\t\t\t\t\t\t\t\t  \t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\t    \t\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-8\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div id=\"visualPanel\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div  class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-heading\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h3 class=\"panel-title\"><i class=\"fa fa-eye\"></i>&nbsp;{{'VISUAL_PANEL' | translate}}</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<!-- lines -->\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ul class=\"list-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"list-group-item\" ng-repeat=\"line in vm.configuration.lines track by $index\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<!-- columns -->\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-switch on=\"line.columns.length\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-warning\" ng-hide=\"$index==0\" ng-click=\"vm.upThisLine($index)\"><i class=\"fa fa-arrow-up\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-warning\" ng-hide=\"$index==(vm.configuration.lines.length-1)\" ng-click=\"vm.downThisLine($index)\"><i class=\"fa fa-arrow-down\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-danger pull-right\" ng-click=\"vm.removeThisLine($index)\"><i class=\"fa fa-trash-o\"></i></button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 well\">\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"2\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-warning\" ng-hide=\"$index==0\" ng-click=\"vm.upThisLine($index)\"><i class=\"fa fa-arrow-up\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-warning\" ng-hide=\"$index==(vm.configuration.lines.length-1)\" ng-click=\"vm.downThisLine($index)\"><i class=\"fa fa-arrow-down\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-danger pull-right\" ng-click=\"vm.removeThisLine($index)\"><i class=\"fa fa-trash-o\"></i></button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-6 well\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-6 well\">\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[1].control.type !== 'none'  ? line.columns[1].control.type + ' ' + line.columns[1].control.subtype || '' : 'column 2'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button> \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t    \t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-warning\" ng-hide=\"$index==0\" ng-click=\"vm.upThisLine($index)\"><i class=\"fa fa-arrow-up\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-warning\" ng-hide=\"$index==(vm.configuration.lines.length-1)\" ng-click=\"vm.downThisLine($index)\"><i class=\"fa fa-arrow-down\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-danger pull-right\" ng-click=\"vm.removeThisLine($index)\"><i class=\"fa fa-trash-o\"></i></button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[1].control.type !== 'none'  ? line.columns[1].control.type + ' ' + line.columns[1].control.subtype || '' : 'column 2'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t   \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[2].control.type !== 'none'  ? line.columns[2].control.type + ' ' + line.columns[2].control.subtype || '' : 'column 3'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button> \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t    \t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<div class=\"animate-switch\" ng-switch-when=\"first\">\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4\">\n\t\t\t\t\t\t\t\t\t\t\t<div id=\"commandPanel\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div  class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-heading\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h3 class=\"panel-title\"><i class=\"fa fa-keyboard-o\"></i>&nbsp;{{'COMMAND_PANEL' | translate}}</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h4 class=\"numberOfcolumsText text-center\"><i>- {{'SELECTED_LINE' | translate}} -</i></h4>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h4 class=\"numberOfcolumsText text-center\">{{'NUMBER_OF_COLUMN' | translate}} :</h4>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-xs-2 col-xs-offset-3 col-sm-2 col-sm-offset-3 col-md-2 col-md-offset-3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary pull-right btnMinusColumns\" ng-click=\"vm.decreaseNumberOfColumns()\"><i class=\"fa fa-minus fa-1x\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-xs-2 col-sm-2 col-md-2 text-center\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"numberOfColumnsLabel \">{{vm.configuration.lines[vm.configuration.activeLine -1].columns.length}}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-xs-2 col-sm-2 col-md-2\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary pull-left btnAddColumns\" ng-click=\"vm.increaseNumberOfColumns()\"><i class=\"fa fa-plus fa-1x\"></i></button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t   \t\t\t\t\t\t\t\t\t\t   \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\t    \t\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-8\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div id=\"visualPanel\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div  class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-heading\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h3 class=\"panel-title\"><i class=\"fa fa-eye\"></i>&nbsp;{{'VISUAL_PANEL' | translate}}</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<!-- lines / columns -->\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ul class=\"list-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"list-group-item\" ng-repeat=\"line in vm.configuration.lines track by $index\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<!-- columns -->\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-switch on=\"line.columns.length\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn\" ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\" ng-click=\"vm.setActiveLineNumber($index + 1)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa\"  ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 well\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"2\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn\" ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\" ng-click=\"vm.setActiveLineNumber($index + 1)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa\"  ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-6 well\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-6 well\">\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[1].control.type !== 'none'  ? line.columns[1].control.type + ' ' + line.columns[1].control.subtype || '' : 'column 2'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t    \t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn\" ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\" ng-click=\"vm.setActiveLineNumber($index + 1)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa\"  ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[1].control.type !== 'none'  ? line.columns[1].control.type + ' ' + line.columns[1].control.subtype || '' : 'column 2'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t   \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block  btn-default disabled\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[2].control.type !== 'none'  ? line.columns[2].control.type + ' ' + line.columns[2].control.subtype || '' : 'column 3'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t    \t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t<div class=\"animate-switch\" ng-switch-when=\"second\">\t\t\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div id=\"commandPanel\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div  class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-heading\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h3 class=\"panel-title\"><i class=\"fa fa-keyboard-o\"></i>&nbsp;{{'COMMAND_PANEL' | translate}}</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h4 class=\"numberOfcolumsText text-center\">- {{'APPLY_CTRL2COL' | translate}} -</h4>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-lg-12\" >\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<hr/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<blockquote>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"numberOfcolumsText\"><i class=\"fa fa-minus\"></i>&nbsp; {{'CLIC_TAP_2_OPEN' | translate}}.</p> \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=\"numberOfcolumsText\"><i class=\"fa fa-minus\"></i>&nbsp; {{'SELECT_2_APPLY_COL' | translate}}.</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</blockquote>\t\t\t\t\t\t\t\t\t\t\t\t   \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t   \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\t    \t\n\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-8\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div id=\"visualPanel\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div  class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-heading\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h3 class=\"panel-title\"><i class=\"fa fa-eye\"></i>&nbsp;{{'VISUAL_PANEL' | translate}}</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<!-- lines / columns -->\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ul class=\"list-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"list-group-item\" ng-repeat=\"line in vm.configuration.lines track by $index\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<!-- columns -->\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div ng-switch on=\"line.columns.length\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn\" ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\" ng-click=\"vm.setActiveLineNumber($index + 1)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa\"  ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 well\">\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block\" ng-class=\"{'btn-primary': !line.columns[0].control.edited, 'btn-success': line.columns[0].control.edited}\" ng-click=\"vm.showModalAddCtrlToColumn('', $index, 0)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"2\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn\" ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\" ng-click=\"vm.setActiveLineNumber($index + 1)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa\"  ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-6 well\">\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block\" ng-class=\"{'btn-primary': !line.columns[0].control.edited, 'btn-success': line.columns[0].control.edited}\" ng-click=\"vm.showModalAddCtrlToColumn('', $index, 0)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-6 well\">\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block\" ng-class=\"{'btn-primary': !line.columns[1].control.edited, 'btn-success': line.columns[1].control.edited}\" ng-click=\"vm.showModalAddCtrlToColumn('', $index, 1)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[1].control.type !== 'none'  ? line.columns[1].control.type + ' ' + line.columns[1].control.subtype || '' : 'column 2'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row linesList\" ng-switch-when=\"3\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12 lineCommandButtons\" ng-show=\"vm.configuration.lines.length > 1\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn\" ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\" ng-click=\"vm.setActiveLineNumber($index + 1)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa\"  ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block\" ng-class=\"{'btn-primary': !line.columns[0].control.edited, 'btn-success': line.columns[0].control.edited}\" ng-click=\"vm.showModalAddCtrlToColumn('', $index, 0)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[0].control.type !== 'none'  ? line.columns[0].control.type + ' ' + line.columns[0].control.subtype || '' : 'column 1'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block\" ng-class=\"{'btn-primary': !line.columns[1].control.edited, 'btn-success': line.columns[1].control.edited}\" ng-click=\"vm.showModalAddCtrlToColumn('', $index, 1)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[1].control.type !== 'none'  ? line.columns[1].control.type + ' ' + line.columns[1].control.subtype || '' : 'column 2'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4 well\">\t   \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-lg btn-block\" ng-class=\"{'btn-primary': !line.columns[2].control.edited, 'btn-success': line.columns[2].control.edited}\" ng-click=\"vm.showModalAddCtrlToColumn('', $index, 2)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{line.columns[2].control.type !== 'none'  ? line.columns[2].control.type + ' ' + line.columns[2].control.subtype || '' : 'column 3'}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</button>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t    \t\t\t\t\t\t\t\t    \t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\t\n\t\t\t\t\t\t\t\t<div class=\"animate-switch\" ng-switch-when=\"third\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-4\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div id=\"commandPanel\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div  class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-heading\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h3 class=\"panel-title\"><i class=\"fa fa-keyboard-o\"></i>&nbsp;{{'COMMAND_PANEL' | translate}}</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-xs-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputSubmitButtontext\" class=\" greyText control-label\">{{'CUSTOM_SUBMIT_BTN' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" id=\"inputSubmitButtontext\" placeholder=\"\" ng-model=\"vm.configuration.submitButtonText\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t\t\t\t    \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<hr/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-xs-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputCancelButtontext\" class=\" greyText control-label\">{{'CUSTOM_CANCEL_BTN' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" id=\"inputCancelButtontext\" placeholder=\"\" ng-model=\"vm.configuration.cancelButtonText\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t\t\t\t    \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<hr/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-xs-12\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<label for=\"inputNameFormtext\" class=\" greyText control-label\">{{'NAME_THIS_FORM' | translate}} :</label>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"text\" class=\"form-control\" id=\"inputNameFormtext\" placeholder=\"\" ng-model=\"vm.configuration.formName\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t\t\t\t\t\t    \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary btn-block btn-lg\" ng-click=\"vm.saveThisForm()\">{{'SAVE_THIS_FORM' | translate}}</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\t    \t\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"col-md-8\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div id=\"visualPanel\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div  class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-heading\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h3 class=\"panel-title\"><i class=\"fa fa-thumbs-o-up\"></i>&nbsp;{{'FINAL_STEP' | translate}}</h3>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<form ng-submit=\"vm.onSubmit()\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<formly-form id=\"saveFormlyFom\" model=\"vm.dataModel\" fields=\"vm.wfFormFields\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"pull-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" type=\"submit\">{{vm.configuration.submitButtonText}}</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" type=\"cancel\">{{vm.configuration.cancelButtonText}}</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</formly-form>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</form>\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</tab>\t\n\n\t\t\t\t\t\t\t<tab active=\"vm.tab.previewTab.active\" ng-if=\"vm.tab.previewTab.tabVisible\" heading=\"{{'PREVIEW_TAB' | translate}}\">\n\t\t\t\t\t\t\t<div class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t<!-- formly here -->\n\t\t\t\t\t\t\t\t\t<form ng-submit=\"vm.onSubmit()\">\n\t\t\t\t\t\t\t\t\t\t<formly-form id=\"previewFormlyForm\" model=\"vm.dataModel\" fields=\"vm.wfFormFields\">\n\t\t\t\t\t\t\t\t\t\t<span class=\"pull-right\">\n\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" type=\"submit\">{{vm.configuration.submitButtonText}}</button>\n\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" type=\"cancel\">{{vm.configuration.cancelButtonText}}</button>\n\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t</formly-form>\n\t\t\t\t\t\t\t\t\t</form>\t\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div ng-if=\"vm.tab.previewTab.modelsVisible\" class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t<p>{{'DATA_MODEL' | translate}}</p>\n\t\t\t\t\t\t\t\t\t<pre>\n\t\t\t\t\t\t\t\t\t\t{{vm.dataModel | json}}\n\t\t\t\t\t\t\t\t\t</pre>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div ng-if=\"vm.tab.previewTab.modelsVisible\" class=\"panel panel-default\">\n\t\t\t\t\t\t\t\t<div class=\"panel-body\">\n\t\t\t\t\t\t\t\t\t<p>{{'FIELDS_MODEL' | translate}}</p>\n\t\t\t\t\t\t\t\t\t<pre>\n\t\t\t\t\t\t\t\t\t\t{{vm.wfFormFieldsOnlyNeededProperties | json}}\n\t\t\t\t\t\t\t\t\t</pre>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</tab>\n\t\t\t\t\t\t</tabset>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</section>\n\t\t\t<hr/>\n\t\t\t<!--<section>\n\t\t\t\t<h6 class=\"text-right\">Easy form generator : {{vm.easyFormGeneratorVERSION}} — Erwan DATIN (MacKentoch)</h6>\n\t\t\t</section>-->\n\t\t</div>\n\t</div>\n</section>";
-  global.define = __define;
-  return module.exports;
-});
-
-$__System.register("2", [], function (_export) {
-  "use strict";
-
-  return {
-    setters: [],
-    execute: function () {
-      _export("default", window.angular);
-    }
-  };
-});
-$__System.register('4', ['3'], function (_export) {
-	'use strict';
-
-	var easyFormConfig, EASY_FORM_VERSION_NAME, EASY_FORM_VERSION_VALUE, ACTIVE_MODAL_ANIMATION;
-
-	function easyFromConfig(easyFormSteWayConfigProvider) {
-		//enable/disable easy form modal animation
-		//HERE : disabling animation due to angular bootstrap backdrop bug with angular >= 1.4
-		easyFormSteWayConfigProvider.setModalAnimation(ACTIVE_MODAL_ANIMATION);
-	}
-
-	return {
-		setters: [function (_) {
-			easyFormConfig = _['default'];
-		}],
-		execute: function () {
-			EASY_FORM_VERSION_NAME = 'easyFormGenVersion';
-			EASY_FORM_VERSION_VALUE = easyFormConfig.stepway.version;
-			ACTIVE_MODAL_ANIMATION = false;
-			easyFromConfig.$inject = ['easyFormSteWayConfigProvider'];
-
-			_export('default', easyFromConfig);
-
-			_export('EASY_FORM_VERSION_NAME', EASY_FORM_VERSION_NAME);
-
-			_export('EASY_FORM_VERSION_VALUE', EASY_FORM_VERSION_VALUE);
-		}
-	};
-});
-$__System.register("5", [], function (_export) {
-	"use strict";
-
-	var richTextTemplate, blankTemplate, subTitleTemplate, basicSelectTemplate, groupedSelectTemplate, datepickerTemplate, validationTemplate;
-	return {
-		setters: [],
-		execute: function () {
-			richTextTemplate = "<text-angular name=\"{{id}}\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\tclass=\"richTextAngular\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-model=\"model[options.key || index]\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</text-angular>";
-			blankTemplate = "<div></div>";
-			subTitleTemplate = "<div class=\"row\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h4 class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t{{options.templateOptions.placeholder}}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h4><hr/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t</div>";
-			basicSelectTemplate = " <ol  class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\" \n\t\t\t\t\t\t\t\t\tng-model=\"model[options.key || index]\"  \n\t\t\t\t\t\t\t\t\t\tid=\"{{id}}\"  \n\t\t\t\t\t\t\t\t\tdisabled=\"options.templateOptions.options.length === 0\">  \n\t\t\t\t\t\t\t\t\t\t<li class=\"nya-bs-option\" nya-bs-option=\"option in options.templateOptions.options\">  \n\t\t\t\t\t\t\t\t\t\t\t<a>{{option.name}}</a> \n\t\t\t\t\t\t\t\t\t\t</li>  \n\t\t\t\t\t\t\t\t\t</ol>    ";
-			groupedSelectTemplate = "<ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-model=\"model[options.key || index]\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdata-live-search=\"true\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdisabled=\"options.templateOptions.options.length === 0\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<li nya-bs-option=\"option in  options.templateOptions.options group by option.group\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"dropdown-header\">{{$group}}</span> \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span>{{option.name}}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"glyphicon glyphicon-ok check-mark\"></span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</ol>";
-			datepickerTemplate = "\t<input  id=\"{{id}}\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tclass=\"form-control\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-click=\"open($event)\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-model=\"model[options.key  || index]\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tis-open=\"to.isOpen\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tng-click=\"to.isOpen = true\" \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdatepicker-options=\"to.datepickerOptions\" />";
-			validationTemplate = "\n\t<div class=\"formly-template-wrapper form-group\"\n\t\t\t\t\t\tng-class=\"{'has-error': options.validation.errorExistsAndShouldBeVisible}\">\n\t\t\t\t<formly-transclude></formly-transclude>\n\t\t\t\t<div class=\"validation\"\n\t\t\t\t\t\t\tng-if=\"options.validation.errorExistsAndShouldBeVisible\"\n\t\t\t\t\t\t\tng-messages=\"options.formControl.$error\">\n\t\t\t\t\t<div ng-messages-include=\"validation.html\"></div>\n\t\t\t\t\t<div ng-message=\"{{::name}}\" ng-repeat=\"(name, message) in ::options.validation.messages\">\n\t\t\t\t\t\t{{message(options.formControl.$viewValue, options.formControl.$modelValue, this)}}\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>";
-
-			_export("richTextTemplate", richTextTemplate);
-
-			_export("blankTemplate", blankTemplate);
-
-			_export("subTitleTemplate", subTitleTemplate);
-
-			_export("basicSelectTemplate", basicSelectTemplate);
-
-			_export("groupedSelectTemplate", groupedSelectTemplate);
-
-			_export("datepickerTemplate", datepickerTemplate);
-
-			_export("validationTemplate", validationTemplate);
-		}
-	};
-});
-$__System.register('6', ['5'], function (_export) {
-	/* global angular */
-	'use strict';
-
-	var richTextTemplate, blankTemplate, subTitleTemplate, basicSelectTemplate, groupedSelectTemplate, datepickerTemplate, validationTemplate;
-
-	function formlyConfig(formlyConfigProvider) {
-
-		formlyConfigProvider.setType({
-			name: 'richEditor',
-			//wrapper: ['bootstrapLabel', 'bootstrapHasError'],
-			template: richTextTemplate
-		});
-
-		formlyConfigProvider.setType({
-			name: 'blank',
-			template: blankTemplate
-		});
-
-		formlyConfigProvider.setType({
-			name: 'subTitle',
-			template: subTitleTemplate
-		});
-
-		formlyConfigProvider.setType({
-			name: 'basicSelect',
-			template: basicSelectTemplate
-		});
-
-		formlyConfigProvider.setType({
-			name: 'groupedSelect',
-			template: groupedSelectTemplate
-		});
-
-		////////////////////////////
-		// angular UI date picker
-		////////////////////////////
-		// thx Kent C. Dodds
-
-		var attributes = ['date-disabled', 'custom-class', 'show-weeks', 'starting-day', 'init-date', 'min-mode', 'max-mode', 'format-day', 'format-month', 'format-year', 'format-day-header', 'format-day-title', 'format-month-title', 'year-range', 'shortcut-propagation', 'datepicker-popup', 'show-button-bar', 'current-text', 'clear-text', 'close-text', 'close-on-date-selection', 'datepicker-append-to-body'];
-
-		var bindings = ['datepicker-mode', 'min-date', 'max-date'];
-
-		var ngModelAttrs = {};
-
-		angular.forEach(attributes, function (attr) {
-			ngModelAttrs[camelize(attr)] = { attribute: attr };
-		});
-
-		angular.forEach(bindings, function (binding) {
-			ngModelAttrs[camelize(binding)] = { bound: binding };
-		});
-
-		formlyConfigProvider.setType({
-			name: 'datepicker',
-			template: datepickerTemplate,
-			wrapper: ['bootstrapLabel', 'bootstrapHasError'],
-			controller: ['$scope', function ($scope) {
-				$scope.open = function ($event) {
-					$event.preventDefault();
-					$event.stopPropagation();
-					$scope.opened = true;
-				};
-			}],
-			defaultOptions: {
-				ngModelAttrs: ngModelAttrs,
-				templateOptions: {
-					addonLeft: {
-						'class': 'glyphicon glyphicon-calendar',
-						onClick: function onClick(options, scope) {
-							options.templateOptions.isOpen = !options.templateOptions.isOpen;
-						}
-					},
-					onFocus: function onFocus($viewValue, $modelValue, scope) {
-						scope.to.isOpen = !scope.to.isOpen;
-					},
-					datepickerOptions: {}
-				}
-			}
-
-		});
-
-		/**
-  	* wrappers to show validation errors
-  	* without having to rewrite formly types
-  	*/
-		formlyConfigProvider.setWrapper([{
-			template: validationTemplate
-		}]);
-
-		function camelize(string) {
-			string = string.replace(/[\-_\s]+(.)?/g, function (match, chr) {
-				return chr ? chr.toUpperCase() : '';
-			});
-			// Ensure 1st char is always lowercase
-			return string.replace(/^([A-Z])/, function (match, chr) {
-				return chr ? chr.toLowerCase() : '';
-			});
-		}
-	}
-
-	return {
-		setters: [function (_) {
-			richTextTemplate = _.richTextTemplate;
-			blankTemplate = _.blankTemplate;
-			subTitleTemplate = _.subTitleTemplate;
-			basicSelectTemplate = _.basicSelectTemplate;
-			groupedSelectTemplate = _.groupedSelectTemplate;
-			datepickerTemplate = _.datepickerTemplate;
-			validationTemplate = _.validationTemplate;
-		}],
-		execute: function () {
-			formlyConfig.$inject = ['formlyConfigProvider'];
-
-			_export('default', formlyConfig);
-		}
-	};
-});
 $__System.register('d', ['7', '8', '9', 'a', 'b', 'c'], function (_export) {
 	'use strict';
 
@@ -1252,7 +1180,17 @@ $__System.register('f', [], function (_export) {
 		}
 	};
 });
-$__System.register('15', [], function (_export) {
+    $__System.registerDynamic("10", [], true, function ($__require, exports, module) {
+        ;
+        var global = this,
+            __define = global.define;
+        global.define = undefined;
+        module.exports = "<section id=\"pageWfEdit\">\n    <div ng-init=\"\">\n        <div class=\"container-fluid\">\n            <section id=\"preview\">\n                <div id=\"preview-content\">\n                    <div class=\"content-container\">\n                        <!-- taoster alert -->\n                        <toaster-container toaster-options=\"{\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t'position-class': 'toast-top-full-width', \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t'extendedTimeout':500,\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t'timeOut':500,                          \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t}\">\n                        </toaster-container>\n                        <tabset justified=\"true\">\n                            <tab active=\"vm.tab.editTab.active\" heading=\"{{'EDIT_TAB' | translate}}\">\n                                <div class=\"row\">\n                                    <!-- STEP INDICATOR -->\n                                    <div class=\"row stepwizardTopmargin\">\n                                        <div class=\"col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2\">\n                                            <div class=\"stepwizard\">\n                                                <div class=\"row stepwizard-row\">\n                                                    <div class=\"stepwizard-step col-md-3\">\n                                                        <button type=\"button\" class=\"btn btn-circle\"\n                                                                ng-class=\"{'btn-primary': vm.configuration.stepIndicators[0], 'btn-default': !vm.configuration.stepIndicators[0]}\">\n                                                            0\n                                                        </button>\n                                                        <p>{{'WIZARD_LINES' | translate}}</p>\n                                                    </div>\n                                                    <div class=\"stepwizard-step col-md-3\">\n                                                        <button type=\"button\" class=\"btn btn-circle\"\n                                                                ng-class=\"{'btn-primary': vm.configuration.stepIndicators[1], 'btn-default': !vm.configuration.stepIndicators[1], 'disabled': (vm.configuration.configStepCounter < 1)}\">\n                                                            1\n                                                        </button>\n                                                        <p>{{'WIZARD_LAYOUT' | translate}}</p>\n                                                    </div>\n                                                    <div class=\"stepwizard-step col-md-3\">\n                                                        <button type=\"button\" class=\"btn btn-default btn-circle\"\n                                                                ng-class=\"{'btn-primary': vm.configuration.stepIndicators[2], 'btn-default': !vm.configuration.stepIndicators[2], 'disabled': (vm.configuration.configStepCounter < 2)}\">\n                                                            2\n                                                        </button>\n                                                        <p>{{'WIZARD_CONTROLS' | translate}}</p>\n                                                    </div>\n                                                    <div class=\"stepwizard-step col-md-3\">\n                                                        <button type=\"button\" class=\"btn btn-default btn-circle\"\n                                                                ng-class=\"{'btn-primary': vm.configuration.stepIndicators[3], 'btn-default': !vm.configuration.stepIndicators[3], 'disabled': (vm.configuration.configStepCounter < 3)}\">\n                                                            3\n                                                        </button>\n                                                        <p>{{'WIZARD_SAVE' | translate}}</p>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"row\">\n                                    <ul class=\"pager\">\n                                        <li ng-class=\"{'disabled':vm.stepIndicators[0]}\">\n                                            <button class=\"btn btn-primary customPagerButton\"\n                                                    ng-click=\"vm.previousConfigStep()\">\n                                                <i class=\"fa fa-arrow-left fa-2x pull-left\"></i>\n                                                <span class=\"pull-right\">{{'PAGER_PREVIOUS' | translate}}</span>\n                                            </button>\n                                        </li>\n                                        <li ng-class=\"{'disabled':vm.stepIndicators[3]}\">\n                                            <button class=\"btn btn-primary customPagerButton\"\n                                                    ng-click=\"vm.nextConfigStep()\">\n                                                <span class=\"pull-left\">{{'PAGER_NEXT' | translate}}</span>\n                                                <i class=\"fa fa-arrow-right fa-2x pull-right\"></i>\n                                            </button>\n                                        </li>\n                                    </ul>\n                                    <div class=\"animate-switch-container\" ng-switch\n                                         on=\"vm.configuration.listConfigStep[vm.configuration.configStepCounter]\">\n                                        <div class=\"animate-switch\" ng-switch-when=\"init\">\n                                            <div class=\"col-md-4\">\n                                                <div id=\"commandPanel\">\n                                                    <div class=\"panel panel-default\">\n                                                        <div class=\"panel-heading\">\n                                                            <h3 class=\"panel-title\"><i class=\"fa fa-keyboard-o\"></i>&nbsp;{{'COMMAND_PANEL'\n                                                                | translate}}</h3>\n                                                        </div>\n                                                        <div class=\"panel-body\">\n                                                            <div class=\"row\">\n                                                                <div class=\"col-md-12\">\n                                                                    <span class=\"addNewLine\">{{'ADD_NEW_LINE' | translate}} :</span>&nbsp;\n                                                                    <button class=\"btn btn-primary\"\n                                                                            ng-click=\"vm.addNewline()\"><i\n                                                                            class=\"fa fa-plus fa-1x\"></i></button>\n                                                                </div>\n                                                            </div>\n                                                        </div>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                            <div class=\"col-md-8\">\n                                                <div id=\"visualPanel\">\n                                                    <div class=\"panel panel-default\">\n                                                        <div class=\"panel-heading\">\n                                                            <h3 class=\"panel-title\"><i class=\"fa fa-eye\"></i>&nbsp;{{'VISUAL_PANEL'\n                                                                | translate}}</h3>\n                                                        </div>\n                                                        <div class=\"panel-body\">\n                                                            <!-- lines -->\n                                                            <ul class=\"list-group\">\n                                                                <li class=\"list-group-item\"\n                                                                    ng-repeat=\"line in vm.configuration.lines track by $index\">\n                                                                    <!-- columns -->\n                                                                    <div ng-switch on=\"line.columns.length\">\n                                                                        <div class=\"row linesList\" ng-switch-when=\"1\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn btn-warning\"\n                                                                                        ng-hide=\"$index==0\"\n                                                                                        ng-click=\"vm.upThisLine($index)\">\n                                                                                    <i class=\"fa fa-arrow-up\"></i>\n                                                                                </button>\n                                                                                <button class=\"btn btn-warning\"\n                                                                                        ng-hide=\"$index==(vm.configuration.lines.length-1)\"\n                                                                                        ng-click=\"vm.downThisLine($index)\">\n                                                                                    <i class=\"fa fa-arrow-down\"></i>\n                                                                                </button>\n                                                                                <button class=\"btn btn-danger pull-right\"\n                                                                                        ng-click=\"vm.removeThisLine($index)\">\n                                                                                    <i class=\"fa fa-trash-o\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-12 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                        <div class=\"row linesList\" ng-switch-when=\"2\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn btn-warning\"\n                                                                                        ng-hide=\"$index==0\"\n                                                                                        ng-click=\"vm.upThisLine($index)\">\n                                                                                    <i class=\"fa fa-arrow-up\"></i>\n                                                                                </button>\n                                                                                <button class=\"btn btn-warning\"\n                                                                                        ng-hide=\"$index==(vm.configuration.lines.length-1)\"\n                                                                                        ng-click=\"vm.downThisLine($index)\">\n                                                                                    <i class=\"fa fa-arrow-down\"></i>\n                                                                                </button>\n                                                                                <button class=\"btn btn-danger pull-right\"\n                                                                                        ng-click=\"vm.removeThisLine($index)\">\n                                                                                    <i class=\"fa fa-trash-o\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-6 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-6 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[1].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[1].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[1].control.subtype\n                                                                                        || '' : 'column 2'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                        <div class=\"row linesList\" ng-switch-when=\"3\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn btn-warning\"\n                                                                                        ng-hide=\"$index==0\"\n                                                                                        ng-click=\"vm.upThisLine($index)\">\n                                                                                    <i class=\"fa fa-arrow-up\"></i>\n                                                                                </button>\n                                                                                <button class=\"btn btn-warning\"\n                                                                                        ng-hide=\"$index==(vm.configuration.lines.length-1)\"\n                                                                                        ng-click=\"vm.downThisLine($index)\">\n                                                                                    <i class=\"fa fa-arrow-down\"></i>\n                                                                                </button>\n                                                                                <button class=\"btn btn-danger pull-right\"\n                                                                                        ng-click=\"vm.removeThisLine($index)\">\n                                                                                    <i class=\"fa fa-trash-o\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[1].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[1].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[1].control.subtype\n                                                                                        || '' : 'column 2'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[2].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[2].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[2].control.subtype\n                                                                                        || '' : 'column 3'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                    </div>\n                                                                </li>\n                                                            </ul>\n                                                        </div>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                        <div class=\"animate-switch\" ng-switch-when=\"first\">\n                                            <div class=\"col-md-4\">\n                                                <div id=\"commandPanel\">\n                                                    <div class=\"panel panel-default\">\n                                                        <div class=\"panel-heading\">\n                                                            <h3 class=\"panel-title\"><i class=\"fa fa-keyboard-o\"></i>&nbsp;{{'COMMAND_PANEL'\n                                                                | translate}}</h3>\n                                                        </div>\n                                                        <div class=\"panel-body\">\n                                                            <div class=\"row\">\n                                                                <div class=\"col-md-12\">\n                                                                    <h4 class=\"numberOfcolumsText text-center\"><i>-\n                                                                        {{'SELECTED_LINE' | translate}} -</i></h4>\n                                                                    <h4 class=\"numberOfcolumsText text-center\">\n                                                                        {{'NUMBER_OF_COLUMN' | translate}} :</h4>\n                                                                </div>\n                                                            </div>\n                                                            <div class=\"row\">\n                                                                <div class=\"col-xs-2 col-xs-offset-3 col-sm-2 col-sm-offset-3 col-md-2 col-md-offset-3\">\n                                                                    <button class=\"btn btn-primary pull-right btnMinusColumns\"\n                                                                            ng-click=\"vm.decreaseNumberOfColumns()\"><i\n                                                                            class=\"fa fa-minus fa-1x\"></i></button>\n                                                                </div>\n                                                                <div class=\"col-xs-2 col-sm-2 col-md-2 text-center\">\n                                                                    <span class=\"numberOfColumnsLabel \">{{vm.configuration.lines[vm.configuration.activeLine -1].columns.length}}</span>\n                                                                </div>\n                                                                <div class=\"col-xs-2 col-sm-2 col-md-2\">\n                                                                    <button class=\"btn btn-primary pull-left btnAddColumns\"\n                                                                            ng-click=\"vm.increaseNumberOfColumns()\"><i\n                                                                            class=\"fa fa-plus fa-1x\"></i></button>\n                                                                </div>\n                                                            </div>\n                                                        </div>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                            <div class=\"col-md-8\">\n                                                <div id=\"visualPanel\">\n                                                    <div class=\"panel panel-default\">\n                                                        <div class=\"panel-heading\">\n                                                            <h3 class=\"panel-title\"><i class=\"fa fa-eye\"></i>&nbsp;{{'VISUAL_PANEL'\n                                                                | translate}}</h3>\n                                                            </h3>\n                                                        </div>\n                                                        <div class=\"panel-body\">\n                                                            <!-- lines / columns -->\n                                                            <ul class=\"list-group\">\n                                                                <li class=\"list-group-item\"\n                                                                    ng-repeat=\"line in vm.configuration.lines track by $index\">\n                                                                    <!-- columns -->\n                                                                    <div ng-switch on=\"line.columns.length\">\n                                                                        <div class=\"row linesList\" ng-switch-when=\"1\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn\"\n                                                                                        ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\"\n                                                                                        ng-click=\"vm.setActiveLineNumber($index + 1)\">\n                                                                                    <i class=\"fa\"\n                                                                                       ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-12 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                        <div class=\"row linesList\" ng-switch-when=\"2\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn\"\n                                                                                        ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\"\n                                                                                        ng-click=\"vm.setActiveLineNumber($index + 1)\">\n                                                                                    <i class=\"fa\"\n                                                                                       ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-6 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-6 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[1].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[1].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[1].control.subtype\n                                                                                        || '' : 'column 2'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                        <div class=\"row linesList\" ng-switch-when=\"3\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn\"\n                                                                                        ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\"\n                                                                                        ng-click=\"vm.setActiveLineNumber($index + 1)\">\n                                                                                    <i class=\"fa\"\n                                                                                       ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[1].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[1].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[1].control.subtype\n                                                                                        || '' : 'column 2'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block  btn-default disabled\">\n                                                                                        {{line.columns[2].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[2].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[2].control.subtype\n                                                                                        || '' : 'column 3'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                    </div>\n                                                                </li>\n                                                            </ul>\n                                                        </div>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n\n                                        <div class=\"animate-switch\" ng-switch-when=\"second\">\n                                            <div class=\"col-md-4\">\n                                                <div id=\"commandPanel\">\n                                                    <div class=\"panel panel-default\">\n                                                        <div class=\"panel-heading\">\n                                                            <h3 class=\"panel-title\"><i class=\"fa fa-keyboard-o\"></i>&nbsp;{{'COMMAND_PANEL'\n                                                                | translate}}</h3>\n                                                        </div>\n                                                        <div class=\"panel-body\">\n                                                            <div class=\"row\">\n                                                                <div class=\"col-md-12\">\n                                                                    <h4 class=\"numberOfcolumsText text-center\">-\n                                                                        {{'APPLY_CTRL2COL' | translate}} -</h4>\n                                                                </div>\n                                                            </div>\n                                                            <div class=\"row\">\n                                                                <div class=\"col-lg-12\">\n                                                                    <hr/>\n                                                                    <blockquote>\n                                                                        <p class=\"numberOfcolumsText\"><i\n                                                                                class=\"fa fa-minus\"></i>&nbsp;\n                                                                            {{'CLIC_TAP_2_OPEN' | translate}}.</p>\n                                                                        <p class=\"numberOfcolumsText\"><i\n                                                                                class=\"fa fa-minus\"></i>&nbsp;\n                                                                            {{'SELECT_2_APPLY_COL' | translate}}.</p>\n                                                                    </blockquote>\n                                                                </div>\n                                                            </div>\n                                                        </div>\n                                                    </div>\n                                                </div>\n                                            </div>\n\n                                            <div class=\"col-md-8\">\n                                                <div id=\"visualPanel\">\n                                                    <div class=\"panel panel-default\">\n                                                        <div class=\"panel-heading\">\n                                                            <h3 class=\"panel-title\"><i class=\"fa fa-eye\"></i>&nbsp;{{'VISUAL_PANEL'\n                                                                | translate}}</h3>\n                                                            </h3>\n                                                        </div>\n                                                        <div class=\"panel-body\">\n                                                            <!-- lines / columns -->\n                                                            <ul class=\"list-group\">\n                                                                <li class=\"list-group-item\"\n                                                                    ng-repeat=\"line in vm.configuration.lines track by $index\">\n                                                                    <!-- columns -->\n                                                                    <div ng-switch on=\"line.columns.length\">\n                                                                        <div class=\"row linesList\" ng-switch-when=\"1\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn\"\n                                                                                        ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\"\n                                                                                        ng-click=\"vm.setActiveLineNumber($index + 1)\">\n                                                                                    <i class=\"fa\"\n                                                                                       ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-12 well\">\n                                                                                    <button class=\"btn btn-lg btn-block\"\n                                                                                            ng-class=\"{'btn-primary': !line.columns[0].control.edited, 'btn-success': line.columns[0].control.edited}\"\n                                                                                            ng-click=\"vm.showModalAddCtrlToColumn('', $index, 0)\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                        <div class=\"row linesList\" ng-switch-when=\"2\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn\"\n                                                                                        ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\"\n                                                                                        ng-click=\"vm.setActiveLineNumber($index + 1)\">\n                                                                                    <i class=\"fa\"\n                                                                                       ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-6 well\">\n                                                                                    <button class=\"btn btn-lg btn-block\"\n                                                                                            ng-class=\"{'btn-primary': !line.columns[0].control.edited, 'btn-success': line.columns[0].control.edited}\"\n                                                                                            ng-click=\"vm.showModalAddCtrlToColumn('', $index, 0)\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-6 well\">\n                                                                                    <button class=\"btn btn-lg btn-block\"\n                                                                                            ng-class=\"{'btn-primary': !line.columns[1].control.edited, 'btn-success': line.columns[1].control.edited}\"\n                                                                                            ng-click=\"vm.showModalAddCtrlToColumn('', $index, 1)\">\n                                                                                        {{line.columns[1].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[1].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[1].control.subtype\n                                                                                        || '' : 'column 2'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                        <div class=\"row linesList\" ng-switch-when=\"3\">\n                                                                            <div class=\"col-md-12 lineCommandButtons\"\n                                                                                 ng-show=\"vm.configuration.lines.length > 1\">\n                                                                                <button class=\"btn\"\n                                                                                        ng-class=\"{'btn-warning':($index + 1) !== vm.configuration.activeLine, 'btn-success': ($index + 1) === vm.configuration.activeLine}\"\n                                                                                        ng-click=\"vm.setActiveLineNumber($index + 1)\">\n                                                                                    <i class=\"fa\"\n                                                                                       ng-class=\"{'fa-square-o': ($index + 1) !== vm.configuration.activeLine, 'fa-check-square-o': ($index + 1) === vm.configuration.activeLine}\"></i>\n                                                                                </button>\n                                                                            </div>\n                                                                            <div class=\"col-md-12\">\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block\"\n                                                                                            ng-class=\"{'btn-primary': !line.columns[0].control.edited, 'btn-success': line.columns[0].control.edited}\"\n                                                                                            ng-click=\"vm.showModalAddCtrlToColumn('', $index, 0)\">\n                                                                                        {{line.columns[0].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[0].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[0].control.subtype\n                                                                                        || '' : 'column 1'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block\"\n                                                                                            ng-class=\"{'btn-primary': !line.columns[1].control.edited, 'btn-success': line.columns[1].control.edited}\"\n                                                                                            ng-click=\"vm.showModalAddCtrlToColumn('', $index, 1)\">\n                                                                                        {{line.columns[1].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[1].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[1].control.subtype\n                                                                                        || '' : 'column 2'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                                <div class=\"col-md-4 well\">\n                                                                                    <button class=\"btn btn-lg btn-block\"\n                                                                                            ng-class=\"{'btn-primary': !line.columns[2].control.edited, 'btn-success': line.columns[2].control.edited}\"\n                                                                                            ng-click=\"vm.showModalAddCtrlToColumn('', $index, 2)\">\n                                                                                        {{line.columns[2].control.type\n                                                                                        !== 'none' ?\n                                                                                        line.columns[2].control.type + '\n                                                                                        ' +\n                                                                                        line.columns[2].control.subtype\n                                                                                        || '' : 'column 3'}}\n                                                                                    </button>\n                                                                                </div>\n                                                                            </div>\n                                                                        </div>\n                                                                    </div>\n                                                                </li>\n                                                            </ul>\n                                                        </div>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                        <div class=\"animate-switch\" ng-switch-when=\"third\">\n                                            <div class=\"col-md-4\">\n                                                <div id=\"commandPanel\">\n                                                    <div class=\"panel panel-default\">\n                                                        <div class=\"panel-heading\">\n                                                            <h3 class=\"panel-title\"><i class=\"fa fa-keyboard-o\"></i>&nbsp;{{'COMMAND_PANEL'\n                                                                | translate}}</h3>\n                                                        </div>\n                                                        <div class=\"panel-body\">\n                                                            <div class=\"row\">\n                                                                <div class=\"col-xs-12\">\n                                                                    <div class=\"form-group\">\n                                                                        <label for=\"inputSubmitButtontext\"\n                                                                               class=\" greyText control-label\">{{'CUSTOM_SUBMIT_BTN'\n                                                                            | translate}} :</label>\n                                                                        <div class=\"\">\n                                                                            <input type=\"text\" class=\"form-control\"\n                                                                                   id=\"inputSubmitButtontext\"\n                                                                                   placeholder=\"\"\n                                                                                   ng-model=\"vm.configuration.submitButtonText\">\n                                                                        </div>\n                                                                    </div>\n                                                                </div>\n                                                            </div>\n                                                            <hr/>\n                                                            <div class=\"row\">\n                                                                <div class=\"col-xs-12\">\n                                                                    <div class=\"form-group\">\n                                                                        <label for=\"inputCancelButtontext\"\n                                                                               class=\" greyText control-label\">{{'CUSTOM_CANCEL_BTN'\n                                                                            | translate}} :</label>\n                                                                        <div class=\"\">\n                                                                            <input type=\"text\" class=\"form-control\"\n                                                                                   id=\"inputCancelButtontext\"\n                                                                                   placeholder=\"\"\n                                                                                   ng-model=\"vm.configuration.cancelButtonText\">\n                                                                        </div>\n                                                                    </div>\n                                                                </div>\n                                                            </div>\n                                                            <hr/>\n                                                            <div class=\"row\">\n                                                                <div class=\"col-xs-12\">\n                                                                    <div class=\"form-group\">\n                                                                        <label for=\"inputNameFormtext\"\n                                                                               class=\" greyText control-label\">{{'NAME_THIS_FORM'\n                                                                            | translate}} :</label>\n                                                                        <div class=\"\">\n                                                                            <input type=\"text\" class=\"form-control\"\n                                                                                   id=\"inputNameFormtext\" placeholder=\"\"\n                                                                                   ng-model=\"vm.configuration.formName\">\n                                                                        </div>\n                                                                    </div>\n                                                                </div>\n                                                            </div>\n                                                            <button class=\"btn btn-primary btn-block btn-lg\"\n                                                                    ng-click=\"vm.saveThisForm()\">{{'SAVE_THIS_FORM' |\n                                                                translate}}\n                                                            </button>\n                                                        </div>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                            <div class=\"col-md-8\">\n                                                <div id=\"visualPanel\">\n                                                    <div class=\"panel panel-default\">\n                                                        <div class=\"panel-heading\">\n                                                            <h3 class=\"panel-title\"><i class=\"fa fa-thumbs-o-up\"></i>&nbsp;{{'FINAL_STEP'\n                                                                | translate}}</h3>\n                                                        </div>\n                                                        <div class=\"panel-body\">\n                                                            <form ng-submit=\"vm.onSubmit()\">\n                                                                <formly-form id=\"saveFormlyFom\" model=\"vm.dataModel\"\n                                                                             fields=\"vm.wfFormFields\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"pull-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" type=\"submit\">\n                                                                {{vm.configuration.submitButtonText}}\n                                                            </button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" type=\"cancel\">\n                                                                {{vm.configuration.cancelButtonText}}\n                                                            </button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n                                                                </formly-form>\n                                                            </form>\n                                                        </div>\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>\n                                </div>\n                            </tab>\n\n                            <tab active=\"vm.tab.previewTab.active\" ng-if=\"vm.tab.previewTab.tabVisible\"\n                                 heading=\"{{'PREVIEW_TAB' | translate}}\">\n                                <div class=\"panel panel-default\">\n                                    <div class=\"panel-body\">\n                                        <!-- formly here -->\n                                        <form ng-submit=\"vm.onSubmit()\">\n                                            <formly-form id=\"previewFormlyForm\" model=\"vm.dataModel\"\n                                                         fields=\"vm.wfFormFields\">\n\t\t\t\t\t\t\t\t\t\t<span class=\"pull-right\">\n\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" type=\"submit\">\n                                                {{vm.configuration.submitButtonText}}\n                                            </button>\n\t\t\t\t\t\t\t\t\t\t\t<button class=\"btn btn-primary\" type=\"cancel\">\n                                                {{vm.configuration.cancelButtonText}}\n                                            </button>\n\t\t\t\t\t\t\t\t\t\t\t</span>\n                                            </formly-form>\n                                        </form>\n                                    </div>\n                                </div>\n                                <div ng-if=\"vm.tab.previewTab.modelsVisible\" class=\"panel panel-default\">\n                                    <div class=\"panel-body\">\n                                        <p>{{'DATA_MODEL' | translate}}</p>\n\t\t\t\t\t\t\t\t\t<pre>\n\t\t\t\t\t\t\t\t\t\t{{vm.dataModel | json}}\n\t\t\t\t\t\t\t\t\t</pre>\n                                    </div>\n                                </div>\n                                <div ng-if=\"vm.tab.previewTab.modelsVisible\" class=\"panel panel-default\">\n                                    <div class=\"panel-body\">\n                                        <p>{{'FIELDS_MODEL' | translate}}</p>\n\t\t\t\t\t\t\t\t\t<pre>\n\t\t\t\t\t\t\t\t\t\t{{vm.wfFormFieldsOnlyNeededProperties | json}}\n\t\t\t\t\t\t\t\t\t</pre>\n                                    </div>\n                                </div>\n                            </tab>\n                        </tabset>\n                    </div>\n                </div>\n            </section>\n            <hr/>\n            <!--<section>\n                <h6 class=\"text-right\">Easy form generator : {{vm.easyFormGeneratorVERSION}} — Erwan DATIN (MacKentoch)</h6>\n            </section>-->\n        </div>\n    </div>\n</section>";
+        global.define = __define;
+        return module.exports;
+    });
+
+    $__System.register('11', [], function (_export) {
 	/* global angular */
 	'use strict';
 
@@ -1342,479 +1280,21 @@ $__System.register('15', [], function (_export) {
 		}
 	};
 });
-$__System.register('17', ['13', '14'], function (_export) {
-	var _createClass, _classCallCheck, EDIT_MODAL_CONTROLLER_NAME, EDIT_MODAL_CONTROLLERAS_NAME, editControlModalController, toInject;
-
-	return {
-		setters: [function (_2) {
-			_createClass = _2['default'];
-		}, function (_3) {
-			_classCallCheck = _3['default'];
-		}],
-		execute: function () {
-			/* global angular */
-			/* global _ */
-			'use strict';
-
-			EDIT_MODAL_CONTROLLER_NAME = 'editControlModalController';
-			EDIT_MODAL_CONTROLLERAS_NAME = 'editControlModCtrl';
-
-			editControlModalController = (function () {
-				function editControlModalController($modalInstance, nyaSelect, toaster, selectOptionManage, $modalProxy) {
-					_classCallCheck(this, editControlModalController);
-
-					this.$modalInstance = $modalInstance;
-					this.nyaSelect = nyaSelect;
-					this.toaster = toaster;
-					this.selectOptionManage = selectOptionManage;
-					this.$modalProxy = $modalProxy;
-
-					this.init();
-				}
-
-				_createClass(editControlModalController, [{
-					key: 'init',
-					value: function init() {
-						var initOptionModel = { rows: [] };
-
-						this.radioRowCollection = initOptionModel;
-						this.newOptionRadio = { saisie: '' };
-						this.basicSelectRowCollection = initOptionModel;
-						this.newOptionBasicSelect = { saisie: '' };
-						this.groupedSelectRowCollection = initOptionModel;
-						this.newOptionGroupedSelect = { saisie: '' };
-						this.GroupedSelectGroups = { list: [] };
-						this.newGroupGroupedSelect = { saisie: '' };
-						this.groupSelectGroupClick = { showList: false };
-						this.demodt = {};
-						this.dateOptions = this.dateOptionsInit();
-						this.demodt.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-						this.nyaSelect.selectedControl = this.nyaSelect.temporyConfig.selectedControl;
-						this.nyaSelectFiltered = {};
-						this.modelNyaSelect = {};
-
-						//init today date
-						this.today();
-						//init nyaSelect model depending selected control
-						this.initNyaSelectConformingSelectedControl();
-					}
-				}, {
-					key: 'initNyaSelectConformingSelectedControl',
-					value: function initNyaSelectConformingSelectedControl() {
-						//place nya-select to selection if not none :
-						if (this.nyaSelect.selectedControl !== 'none') {
-							for (var i = this.nyaSelect.controls.length - 1; i >= 0; i--) {
-								if (this.nyaSelect.controls[i].id === this.nyaSelect.selectedControl) this.modelNyaSelect = this.nyaSelect.controls[i];
-							}
-							if (this.nyaSelect.selectedControl === 'BasicSelect') this.bindBasicSelectFromNYA();
-							if (this.nyaSelect.selectedControl === 'GroupedSelect') this.bindGroupedSelectFromNYA();
-							if (this.nyaSelect.selectedControl === 'Radio') this.bindRadioFromNYA();
-						}
-						this.initNyaSelectFiltered();
-
-						console.info('modal controller : nyaSelect');
-						console.dir(this.nyaSelect);
-					}
-				}, {
-					key: 'initNyaSelectFiltered',
-					value: function initNyaSelectFiltered() {
-						var listCtrl = [].concat(this.$modalProxy.getFilteredNyaSelectObject());
-						angular.extend(this.nyaSelectFiltered, {
-							'controls': listCtrl,
-							'selectedControl': this.nyaSelect.selectedControl,
-							'temporyConfig': this.nyaSelect.temporyConfig
-						});
-					}
-				}, {
-					key: 'bindBasicSelectFromNYA',
-					value: function bindBasicSelectFromNYA() {
-						if (this.nyaSelect.temporyConfig.formlyOptions.length > 0) {
-							for (var i = 0; i <= this.nyaSelect.temporyConfig.formlyOptions.length - 1; i++) {
-								var newOption = {
-									'option': this.nyaSelect.temporyConfig.formlyOptions[i].name,
-									'order': i,
-									'group': ''
-								};
-								this.basicSelectRowCollection.rows.push(newOption);
-							}
-						}
-					}
-				}, {
-					key: 'bindRadioFromNYA',
-					value: function bindRadioFromNYA() {
-						if (this.nyaSelect.temporyConfig.formlyOptions.length > 0) {
-							for (var i = 0; i <= this.nyaSelect.temporyConfig.formlyOptions.length - 1; i++) {
-								var newOption = {
-									'option': this.nyaSelect.temporyConfig.formlyOptions[i].name,
-									'order': i,
-									'group': ''
-								};
-								this.radioRowCollection.rows.push(newOption);
-							}
-						}
-					}
-				}, {
-					key: 'bindGroupedSelectFromNYA',
-					value: function bindGroupedSelectFromNYA() {
-						if (this.nyaSelect.temporyConfig.formlyOptions.length > 0) {
-							for (var i = 0; i <= this.nyaSelect.temporyConfig.formlyOptions.length - 1; i++) {
-								var newOption = {
-									'option': this.nyaSelect.temporyConfig.formlyOptions[i].name,
-									'order': i,
-									'group': this.nyaSelect.temporyConfig.formlyOptions[i].group
-								};
-								this.groupedSelectRowCollection.rows.push(newOption);
-							}
-							var filteredgroup = _.uniq(_.pluck(this.groupedSelectRowCollection.rows, 'group'));
-							angular.copy(filteredgroup, this.GroupedSelectGroups.list);
-						}
-					}
-				}, {
-					key: 'addNewOptionRadio',
-					value: function addNewOptionRadio() {
-						var result = this.selectOptionManage.addNewOptionRadio(this.radioRowCollection, this.newOptionRadio.saisie);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: '\'' + this.newOptionRadio.saisie + '\' cannot be added.',
-								showCloseButton: true
-							});
-						}
-						this.newOptionRadio = { saisie: '' }; //reset input
-					}
-				}, {
-					key: 'removeRadioRow',
-					value: function removeRadioRow(index) {
-						var result = this.selectOptionManage.removeOption(this.radioRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Delete was cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'upThisRadioRow',
-					value: function upThisRadioRow(index) {
-						var result = this.selectOptionManage.upthisOption(this.radioRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Operation cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'downThisRadioRow',
-					value: function downThisRadioRow(index) {
-						var result = this.selectOptionManage.downthisOption(this.radioRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Operation cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'addNewOptionBasicSelect',
-					value: function addNewOptionBasicSelect() {
-						var result = this.selectOptionManage.addNewOptionBasicSelect(this.basicSelectRowCollection, this.newOptionBasicSelect.saisie);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: '\'' + this.newOptionBasicSelect.saisie + '\' cannot be added.',
-								showCloseButton: true
-							});
-						}
-						this.newOptionBasicSelect = { saisie: '' }; //reset input
-					}
-				}, {
-					key: 'removeRow',
-					value: function removeRow(index) {
-						var result = this.selectOptionManage.removeOption(this.basicSelectRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Delete was cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'upThisRow',
-					value: function upThisRow(index) {
-						var result = this.selectOptionManage.upthisOption(this.basicSelectRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Operation cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'downThisRow',
-					value: function downThisRow(index) {
-						var result = this.selectOptionManage.downthisOption(this.basicSelectRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Operation cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'showGroupListToChoose',
-					value: function showGroupListToChoose() {
-						this.groupSelectGroupClick.showList = !this.groupSelectGroupClick.showList;
-					}
-				}, {
-					key: 'addNewGroupToGroupedSelect',
-					value: function addNewGroupToGroupedSelect() {
-						if (this.newGroupGroupedSelect.saisie !== '') {
-							for (var i = this.GroupedSelectGroups.list.length - 1; i >= 0; i--) {
-								if (this.GroupedSelectGroups.list[i] === this.newGroupGroupedSelect.saisie) {
-									this.toaster.pop({
-										type: 'warning',
-										timeout: 2000,
-										title: 'Group already exists',
-										body: 'No group added.',
-										showCloseButton: true
-									});
-								}
-							}
-							this.GroupedSelectGroups.list.push(this.newGroupGroupedSelect.saisie);
-						} else {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: 'Not a valid group to add',
-								body: 'No group added.',
-								showCloseButton: true
-							});
-						}
-						this.newGroupGroupedSelect.saisie = '';
-					}
-				}, {
-					key: 'addNewOptionGroupedSelect',
-					value: function addNewOptionGroupedSelect() {
-						var result = this.selectOptionManage.addNewOptionGroupedSelect(this.groupedSelectRowCollection, this.newOptionGroupedSelect.saisie, '');
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: '\'' + this.newOptionGroupedSelect.saisie + '\' cannot be added.',
-								showCloseButton: true
-							});
-						}
-						//bind nya : dont bind here $apply is not done fast enough
-						//bindGroupedSelectToNya();
-						//reset input
-						this.newOptionGroupedSelect = { saisie: '' };
-					}
-				}, {
-					key: 'removeGroupedSelectRow',
-					value: function removeGroupedSelectRow(index) {
-						var result = this.selectOptionManage.removeOption(this.groupedSelectRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Delete was cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'upThisGroupedSelectRow',
-					value: function upThisGroupedSelectRow(index) {
-						var result = this.selectOptionManage.upthisOption(this.groupedSelectRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Operation cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'downThisGroupedSelectRow',
-					value: function downThisGroupedSelectRow(index) {
-						var result = this.selectOptionManage.downthisOption(this.groupedSelectRowCollection, index);
-						if (result.resultFlag === false) {
-							this.toaster.pop({
-								type: 'warning',
-								timeout: 2000,
-								title: result.details,
-								body: 'Operation cancelled.',
-								showCloseButton: true
-							});
-						}
-					}
-				}, {
-					key: 'today',
-					value: function today() {
-						this.demodt.dt = new Date();
-					}
-				}, {
-					key: 'clear',
-					value: function clear() {
-						this.demodt.dt = null;
-					}
-				}, {
-					key: 'open',
-					value: function open($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						this.demodt.opened = true;
-					}
-				}, {
-					key: 'dateOptionsInit',
-					value: function dateOptionsInit() {
-						return {
-							formatYear: 'yy',
-							startingDay: 1,
-							showWeeks: true,
-							initDate: null
-						};
-					}
-				}, {
-					key: 'selectThisControl',
-					value: function selectThisControl(controlName) {
-						this.nyaSelect.selectedControl = 'none';
-						this.resetTemporyConfig();
-						for (var i = this.nyaSelect.controls.length - 1; i >= 0; i--) {
-							if (this.nyaSelect.controls[i].id === controlName) this.nyaSelect.selectedControl = this.nyaSelect.controls[i].id;
-						}
-						if (this.nyaSelect.selectedControl === 'Date') this.initDatePicker();
-					}
-				}, {
-					key: 'ok',
-					value: function ok() {
-						if (this.nyaSelect.selectedControl === 'BasicSelect') this.bindBasicSelectToNya();
-						if (this.nyaSelect.selectedControl === 'GroupedSelect') this.bindGroupedSelectToNya();
-						if (this.nyaSelect.selectedControl === 'Radio') this.bindRadioToNya();
-						//save config to control
-						this.$modalProxy.applyConfigToSelectedControl(this.nyaSelect);
-						//return current model to parent controller :
-						this.$modalInstance.close(this.nyaSelect);
-					}
-				}, {
-					key: 'cancel',
-					value: function cancel() {
-						this.$modalInstance.dismiss('cancel');
-					}
-				}, {
-					key: 'bindBasicSelectToNya',
-					value: function bindBasicSelectToNya() {
-						var resetNyASelectOptions = [];
-						this.nyaSelect.temporyConfig.formlyOptions = resetNyASelectOptions;
-						if (this.basicSelectRowCollection.rows.length > 0) {
-							for (var i = 0; i <= this.basicSelectRowCollection.rows.length - 1; i++) {
-								var newOption = {
-									'name': this.basicSelectRowCollection.rows[i].option,
-									'value': i,
-									'group': ''
-								};
-								this.nyaSelect.temporyConfig.formlyOptions.push(newOption);
-							}
-						}
-					}
-				}, {
-					key: 'bindGroupedSelectToNya',
-					value: function bindGroupedSelectToNya() {
-						this.nyaSelect.temporyConfig.formlyOptions = [];
-						for (var i = 0; i <= this.groupedSelectRowCollection.rows.length - 1; i++) {
-							var newOption = {
-								'name': this.groupedSelectRowCollection.rows[i].option,
-								'value': i,
-								'group': this.groupedSelectRowCollection.rows[i].group
-							};
-							this.nyaSelect.temporyConfig.formlyOptions.push(newOption);
-						}
-					}
-				}, {
-					key: 'bindRadioToNya',
-					value: function bindRadioToNya() {
-						var resetNyASelectOptions = [];
-						this.nyaSelect.temporyConfig.formlyOptions = resetNyASelectOptions;
-						if (this.radioRowCollection.rows.length > 0) {
-							for (var i = 0; i <= this.radioRowCollection.rows.length - 1; i++) {
-								var newOption = {
-									'name': this.radioRowCollection.rows[i].option,
-									'value': i,
-									'group': ''
-								};
-								this.nyaSelect.temporyConfig.formlyOptions.push(newOption);
-							}
-						}
-					}
-				}, {
-					key: 'initDatePicker',
-					value: function initDatePicker() {
-						this.nyaSelect.temporyConfig.datepickerPopup = this.demodt.formats[0];
-					}
-				}, {
-					key: 'resetTemporyConfig',
-					value: function resetTemporyConfig() {
-						this.nyaSelectFiltered.temporyConfig = {
-							formlyLabel: '',
-							formlyRequired: false,
-							formlyPlaceholder: '',
-							formlyDesciption: '',
-							formlyOptions: []
-						};
-					}
-				}]);
-
-				return editControlModalController;
-			})();
-
-			toInject = ['$modalInstance', 'nyaSelect', 'toaster', 'selectOptionManage', '$modalProxy'];
-
-			editControlModalController.$inject = toInject;
-
-			_export('default', editControlModalController);
-
-			_export('EDIT_MODAL_CONTROLLER_NAME', EDIT_MODAL_CONTROLLER_NAME);
-
-			_export('EDIT_MODAL_CONTROLLERAS_NAME', EDIT_MODAL_CONTROLLERAS_NAME);
-		}
-	};
+    $__System.registerDynamic("12", [], true, function ($__require, exports, module) {
+        ;
+        var global = this,
+            __define = global.define;
+        global.define = undefined;
+        module.exports = "<div class=\"modal-header\">\n    <h3 class=\"modal-title greyText\">{{'SELECT_A_CTRL' | translate}}</h3>\n</div>\n<div class=\"modal-body\">\n    <hr/>\n    <div class=\"row\">\n        <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n            <h5 class=\"greyText\"><i class=\"fa fa-filter\"></i>&nbsp; {{'SELECT_CTRL_IN_LIST' | translate}} :</h5>\n        </div>\n        <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n            <ol class=\"nya-bs-select col-xs-12 col-sm-12 col-md-12 col-lg-12\"\n                ng-model=\"editControlModCtrl.modelNyaSelect\" data-live-search=\"false\">\n                <li nya-bs-option=\"option in editControlModCtrl.nyaSelectFiltered.controls group by option.group\">\n                    <span class=\"dropdown-header greyText\">{{$group}}</span> <!-- group header cannot be searched -->\n                    <a ng-click=\"editControlModCtrl.selectThisControl(option.id)\">\n                        <span>{{ option.name }}</span>\n                        <span class=\"glyphicon glyphicon-ok check-mark\"></span>\n                    </a>\n                </li>\n            </ol>\n        </div>\n    </div>\n    <hr/>\n    <div ng-switch on=\"editControlModCtrl.nyaSelect.selectedControl\">\n        <!--no control selected-->\n        <div ng-switch-when=\"none\">\n            <div class=\"row\">\n                <div class=\"col-sm-12\">\n                    <h5 class=\"text-center texteRouge\"><i class=\"fa fa-arrow-up\"></i>&nbsp; {{'SELECT_A_CTRL' |\n                        translate}}</h5>\n                </div>\n            </div>\n        </div>\n        <!--empty (or blank) control -->\n        <div ng-switch-when=\"empty\">\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"row\">\n                        <div class=\"col-sm-12\">\n                            <h5 class=\"text-center greyText\">{{'COL_WILL_BE_BLANK' | translate}}</h5>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <!--header-->\n        <div ng-switch-when=\"Header\">\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <div class=\"form-group\">\n                                <div class=\"\">\n                                    <h2 class=\"text-center\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</h2>\n                                    <hr/>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"marginTopFivepixels\"></div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextDescriptionUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'HEADER_TEXT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                       id=\"inputHeaderTextUpdate\" placeholder=\"{{'ADD_EDIT_HEADER_HERE' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <!--Subtitle-->\n        <div ng-switch-when=\"Subtitle\">\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <div class=\"form-group\">\n                                <div class=\"\">\n                                    <h4 class=\"text-center\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}</h4>\n                                    <hr/>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"marginTopFivepixels\"></div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputSubTitleTextUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'SUBTITLE_TEXT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\"\n                                       id=\"inputSubTitleTextUpdate\"\n                                       placeholder=\"{{'ADD_EDIT_SUBTIL_HERE' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <!-- TextInput -->\n        <div ng-switch-when=\"TextInput\">\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <div class=\"form-group\">\n                                <label for=\"inputText\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                        ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                        class=\"textControlLabel\">*</span></label>\n                                <div class=\"\">\n                                    <input type=\"text\" class=\"form-control\" id=\"inputText\"\n                                           placeholder=\"{{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}\">\n                                    <p class=\"help-block\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextLabelUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\"\n                                       id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"marginTopFivepixels\"></div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextplaceholderUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'PLACEHOLDER' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\"\n                                       id=\"inputTextplaceholderUpdate\"\n                                       placeholder=\"{{'ADD_EDIT_PLACEHOLD' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"marginTopFivepixels\"></div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextRequiredUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                                <input type=\"checkbox\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                       id=\"inputTextRequiredUpdate\">\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"marginTopFivepixels\"></div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextDescriptionUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                       id=\"inputTextDescriptionUpdate\"\n                                       placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <!-- Number -->\n        <div ng-switch-when=\"Number\">\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <div class=\"form-group\">\n                                <label for=\"inputText\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                        ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                        class=\"textControlLabel\">*</span></label>\n                                <div class=\"\">\n                                    <input type=\"number\" class=\"form-control\" id=\"inputNumber\"\n                                           placeholder=\"{{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}\">\n                                    <p class=\"help-block\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextLabelUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\"\n                                       id=\"inputNumberabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"marginTopFivepixels\"></div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextplaceholderUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'PLACEHOLDER' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\"\n                                       id=\"inputNumberplaceholderUpdate\"\n                                       placeholder=\"{{'ADD_EDIT_PLACEHOLD' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"marginTopFivepixels\"></div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextRequiredUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                                <input type=\"checkbox\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                       id=\"inputNumberRequiredUpdate\">\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"marginTopFivepixels\"></div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextDescriptionUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                       id=\"inputNumberDescriptionUpdate\"\n                                       placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <!-- password -->\n        <div ng-switch-when=\"Password\">\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <div class=\"form-group\">\n                                <label for=\"inputPassword\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                        ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                        class=\"textControlLabel\">*</span></label>\n                                <div class=\"\">\n                                    <input type=\"password\" class=\"form-control\" id=\"inputPassword\"\n                                           placeholder=\"{{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}\">\n                                    <p class=\"help-block\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextLabelUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\"\n                                       id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextplaceholderUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'PLACEHOLDER' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\"\n                                       id=\"inputTextplaceholderUpdate\"\n                                       placeholder=\"{{'ADD_EDIT_PLACEHOLD' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextRequiredUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                                <input type=\"checkbox\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                       id=\"inputTextRequiredUpdate\">\n                            </div>\n                        </div>\n                    </div>\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextDescriptionUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                       id=\"inputTextDescriptionUpdate\"\n                                       placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n\n        <div ng-switch-when=\"Email\">\n            <!-- password -->\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n\n                        <div class=\"col-md-12\">\n\n                            <div class=\"form-group\">\n\n                                <label for=\"inputEmail\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                        ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                        class=\"textControlLabel\">*</span></label>\n\n\n                                <div class=\"\">\n                                    <input type=\"text\" class=\"form-control\" id=\"inputEmail\"\n                                           placeholder=\"{{editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder}}\">\n                                    <p class=\"help-block\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                                </div>\n\n\n                            </div>\n\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextLabelUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\"\n                                       id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextplaceholderUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'PLACEHOLDER' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyPlaceholder\"\n                                       id=\"inputTextplaceholderUpdate\"\n                                       placeholder=\"{{'ADD_EDIT_PLACEHOLD' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextRequiredUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                                <input type=\"checkbox\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                       id=\"inputTextRequiredUpdate\">\n                            </div>\n                        </div>\n                    </div>\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextDescriptionUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                       id=\"inputTextDescriptionUpdate\"\n                                       placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n\n        <div ng-switch-when=\"Date\">\n            <!-- datetimepicker (input type date not ok in all browsers) -->\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n\n                        <div class=\"col-md-12\">\n\n                            <div class=\"form-group\">\n\n                                <label for=\"inputDate\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                        ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                        class=\"textControlLabel\">*</span></label>\n\n                                <div class=\"\">\n\n                                    <div class=\"input-group\">\n                                        <span class=\"input-group-addon\"><i\n                                                class=\"glyphicon glyphicon-calendar\"></i></span>\n\n                                        <input type=\"text\" class=\"form-control\"\n                                               datepicker-popup=\"{{editControlModCtrl.nyaSelect.temporyConfig.datepickerPopup}}\"\n                                               ng-model=\"editControlModCtrl.demodt.dt\"\n                                               is-open=\"editControlModCtrl.demodt.opened\"\n                                               min-date=\"editControlModCtrl.demodt.minDate\" max-date=\"'2099-12-31'\"\n                                               datepicker-options=\"editControlModCtrl.dateOptions\"\n                                               date-disabled=\"editControlModCtrl.disabled(date, mode)\"\n                                               close-text=\"Close\" ng-click=\"editControlModCtrl.open($event)\"/>\n                                    </div>\n\n                                    </p>\n                                    <p class=\"help-block\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DATE_FORMAT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n\n                                <ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\"\n                                    ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.datepickerPopup\"\n                                    id=\"dateformatSelect\">\n                                    <li class=\"nya-bs-option\"\n                                        nya-bs-option=\"dateformat in editControlModCtrl.demodt.formats\"\n                                        value=\"dateformat\">\n                                        <a>{{dateformat}}</a>\n                                    </li>\n                                </ol>\n\n                            </div>\n                        </div>\n                    </div>\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextLabelUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\"\n                                       id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextRequiredUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                                <input type=\"checkbox\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                       id=\"inputTextRequiredUpdate\">\n                            </div>\n                        </div>\n                    </div>\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextDescriptionUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                       id=\"inputTextDescriptionUpdate\"\n                                       placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n\n        <div ng-switch-when=\"Texarea\">\n            <!-- textarea -->\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n\n                        <div class=\"col-md-12\">\n\n                            <div class=\"form-group\">\n\n                                <label for=\"textArea\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                        ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                        class=\"textControlLabel\">*</span></label>\n\n                                <div class=\"\">\n                                    <textarea class=\"form-control\" ng-model=\"model[options.key]\" rows=\"3\"\n                                              id=\"textArea\"></textarea>\n                                    <p class=\"help-block\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                                </div>\n\n                            </div>\n\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextLabelUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\"\n                                       id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextRequiredUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                                <input type=\"checkbox\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                       id=\"inputTextRequiredUpdate\">\n                            </div>\n                        </div>\n                    </div>\n\n                    <div class=\"marginTopFivepixels\"></div>\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextDescriptionUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                       id=\"inputTextDescriptionUpdate\"\n                                       placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n\n        <div ng-switch-when=\"RichTextEditor\">\n            <!-- TextInput -->\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n\n                        <div class=\"col-md-12\">\n\n                            <div class=\"form-group\">\n\n                                <label for=\"RichTextEditor\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                        ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                        class=\"textControlLabel\">*</span></label>\n\n                                <div class=\"\">\n\n                                    <text-angular ng-model=\"editControlModCtrl.model[options.key]\"></text-angular>\n                                    <p class=\"help-block\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                                </div>\n\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <!-- required can't be applied to rich text editor (textAngular) right now -->\n                    <!--<div class=\"row\">\n                                    <div class=\"form-group\">\n                                        <label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">Required :</label>\n                                        <div class=\"col-lg-9\">\n                                            <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                                            <input type=\"checkbox\" ng-model=\"nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n                                        </div>\n                                    </div>\n                    </div>\n\n\n                    <div class=\"marginTopFivepixels\"></div>-->\n\n\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n                            <label for=\"inputTextDescriptionUpdate\"\n                                   class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' |\n                                translate}} :</label>\n                            <div class=\"col-lg-9\">\n                                <input type=\"text\" class=\"form-control\"\n                                       ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                       id=\"inputTextDescriptionUpdate\"\n                                       placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                            </div>\n                        </div>\n                    </div>\n\n\n                </div>\n            </div>\n        </div>\n\n        <div ng-switch-when=\"Radio\">\n            <!-- radios -->\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n\n                        <div class=\"col-md-12\">\n\n                            <div class=\"form-group\">\n\n                                <label for=\"basicSelect\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                        ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                        class=\"textControlLabel\">*</span></label>\n\n                                <div class=\"\">\n\n                                    <div class=\"radio\"\n                                         ng-repeat=\"radioRow in editControlModCtrl.radioRowCollection.rows\">\n                                        <label>\n                                            <input type=\"radio\" name=\"optionsRadios\" id=\"{{'optionsRadio-' + $index}}\"\n                                                   value=\"$index\" checked=\"\">\n                                            {{radioRow.option}}\n                                        </label>\n                                    </div>\n                                    <p class=\"help-block\">\n                                        {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\n                                </div>\n                            </div>\n\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"panel panel-default\">\n                <div class=\"panel-body\">\n\n                    <div class=\"row\">\n                        <div class=\"col-md-12\">\n                            <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                                translate}} :</h5>\n                        </div>\n                    </div>\n                    <hr/>\n\n                    <div class=\"row\">\n                        <div class=\"col-lg-3 col-md-3\">\n                            <label for=\"radioRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'ADD_NEW_RADIO'\n                                | translate}} :</label>\n                        </div>\n                    </div>\n\n                    <div class=\"row\">\n                        <div>\n\n                            <div class=\"form-group\">\n\n                                <div class=\"col-sm-9 col-xs-9 col-md-9 col-lg-9\">\n                                    <input type=\"text\" class=\"form-control\" id=\"inputAddNewRadioOption\"\n                                           placeholder=\"{{'ADD_RADIO_PLACEHOLD' | translate}}\"\n                                           ng-model=\"editControlModCtrl.newOptionRadio.saisie\">\n                                </div>\n\n                                <div class=\"col-sm-3 col-xs-3 col-md-3 col-lg-3\">\n                                    <button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.addNewOptionRadio()\">\n                                        {{'ADD' | translate}}\n                                    </button>\n                                </div>\n\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <div class=\"row\">\n                        <div class=\"col-lg-3 col-md-3\">\n                            <label for=\"radioRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'EDIT_REMOVE_RADIO'\n                                | translate}} :</label>\n                        </div>\n                    </div>\n                    <div class=\"row\">\n                        <div class=\"form-group\">\n\n                            <div class-\n                            \"col-lg-12 col-md-12 col-sm-12 col-xs-12\">\n\n                            <div class=\"container\">\n\n                                <div ng-show=\"editControlModCtrl.radioRowCollection.rows.length === 0\">\n                                    <h5 class=\"text-center greyText\"><em>- {{'NO_RADIO_ADD_NEW' | translate}} -</em>\n                                    </h5>\n                                </div>\n\n\n                                <table ng-if=\"editControlModCtrl.radioRowCollection.rows.length > 0\"\n                                       class=\"table table-striped\">\n                                    <thead>\n                                    <tr>\n                                        <th st-ratio=\"20\">{{'ORDER' | translate}}</th>\n                                        <th st-ratio=\"55\">{{'OPTION' | translate}}</th>\n                                        <th st-ratio=\"25\"></th>\n                                    </tr>\n                                    <tr>\n                                        <th st-ratio=\"20\"></th>\n                                        <th st-ratio=\"55\">\n                                            <input ng-model=\"editControlModCtrl.radioFilter\"\n                                                   placeholder=\"{{'SEARCH_4_OPTION' | translate}}\"\n                                                   class=\"input-sm form-control\" type=\"search\"/>\n                                        </th>\n                                        <th st-ratio=\"25\"></th>\n                                    </tr>\n                                    </thead>\n                                    <tbody>\n                                    <tr ng-repeat=\"radioRow in editControlModCtrl.radioRowCollection.rows | filter:radioFilter as radioRow\">\n                                        <td st-ratio=\"20\">{{$index}}</td>\n                                        <td st-ratio=\"55\">{{radioRow.option}}</td>\n                                        <td st-ratio=\"25\">\n\n                                            <div class=\"pull-right\">\n                                                <button class=\"btn btn-primary\"\n                                                        ng-click=\"editControlModCtrl.upThisRadioRow($index)\"><i\n                                                        class=\"fa fa-arrow-up\"></i></button>\n\n                                                <button class=\"btn btn-primary\"\n                                                        ng-click=\"editControlModCtrl.downThisRadioRow($index)\"><i\n                                                        class=\"fa fa-arrow-down\"></i></button>\n\n                                                <button class=\"btn btn-danger\"\n                                                        ng-click=\"editControlModCtrl.removeRadioRow($index)\"><i\n                                                        class=\"fa fa-trash-o\"></i></button>\n                                            </div>\n\n                                        </td>\n                                    </tr>\n                                    </tbody>\n\n                                </table>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <hr/>\n\n\n                <div class=\"marginTopFivepixels\"></div>\n\n\n                <div class=\"row\">\n                    <div class=\"form-group\">\n                        <label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT'\n                            | translate}} :</label>\n                        <div class=\"col-lg-9\">\n                            <input type=\"text\" class=\"form-control\"\n                                   ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\"\n                                   id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"marginTopFivepixels\"></div>\n\n                <div class=\"row\">\n                    <div class=\"form-group\">\n                        <label for=\"inputTextRequiredUpdate\"\n                               class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}}\n                            :</label>\n                        <div class=\"col-lg-9\">\n                            <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                            <input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                   id=\"inputTextRequiredUpdate\">\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"marginTopFivepixels\"></div>\n\n                <div class=\"row\">\n                    <div class=\"form-group\">\n                        <label for=\"inputTextDescriptionUpdate\"\n                               class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}}\n                            :</label>\n                        <div class=\"col-lg-9\">\n                            <input type=\"text\" class=\"form-control\"\n                                   ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                   id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                        </div>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n    </div>\n\n    <div ng-switch-when=\"Checkbox\">\n        <!-- checkbox -->\n        <div class=\"panel panel-default\">\n            <div class=\"panel-body\">\n\n\n                <div class=\"row\">\n                    <div class=\"col-md-12\">\n                        <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                    </div>\n                </div>\n                <hr/>\n\n                <div class=\"row\">\n\n                    <div class=\"col-md-12\">\n\n                        <div class=\"form-group\">\n\n                            <div class=\"col-md-12\">\n                                <div class=\"checkbox\">\n                                    <label>\n                                        <input type=\"checkbox\" id=\"checkBox\"> <span class=\"blackText\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}</span><span\n                                            ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                            class=\"textControlLabel\">*</span>\n                                    </label>\n\n                                </div>\n                                <p class=\"help-block\">\n                                    {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                            </div>\n\n                        </div>\n\n                    </div>\n\n                </div>\n            </div>\n        </div>\n\n        <div class=\"panel panel-default\">\n            <div class=\"panel-body\">\n\n                <div class=\"row\">\n                    <div class=\"col-md-12\">\n                        <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                            translate}} :</h5>\n                    </div>\n                </div>\n                <hr/>\n\n                <div class=\"row\">\n                    <div class=\"form-group\">\n                        <label for=\"inputTextLabelUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'LABEL_TEXT'\n                            | translate}} :</label>\n                        <div class=\"col-lg-9\">\n                            <input type=\"text\" class=\"form-control\"\n                                   ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyLabel\"\n                                   id=\"inputTextLabelUpdate\" placeholder=\"{{'ADD_EDIT_LABEL_HERE' | translate}}\">\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"marginTopFivepixels\"></div>\n\n                <div class=\"row\">\n                    <div class=\"form-group\">\n                        <label for=\"inputTextRequiredUpdate\"\n                               class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'REQUIRED' | translate}}\n                            :</label>\n                        <div class=\"col-lg-9\">\n                            <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                            <input type=\"checkbox\" ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                   id=\"inputTextRequiredUpdate\">\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"marginTopFivepixels\"></div>\n\n                <div class=\"row\">\n                    <div class=\"form-group\">\n                        <label for=\"inputTextDescriptionUpdate\"\n                               class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION' | translate}}\n                            :</label>\n                        <div class=\"col-lg-9\">\n                            <input type=\"text\" class=\"form-control\"\n                                   ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                                   id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                        </div>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n    </div>\n\n    <div ng-switch-when=\"BasicSelect\">\n\n        <!--  basic selects -->\n        <div class=\"panel panel-default\">\n            <div class=\"panel-body\">\n\n                <div class=\"row\">\n                    <div class=\"col-md-12\">\n                        <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                    </div>\n                </div>\n                <hr/>\n\n\n                <div class=\"row\">\n                    <div class=\"col-md-12\">\n                        <div class=\"form-group\">\n\n                            <label for=\"basicSelect\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                    ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                    class=\"textControlLabel\">*</span></label>\n\n                            <div class=\"\">\n\n                                <ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\"\n                                    ng-model=\"editControlModCtrl.modelbasicSelect\" id=\"basicSelect\"\n                                    disabled=\"editControlModCtrl.basicSelectRowCollection.rows.length === 0\">\n                                    <li class=\"nya-bs-option\"\n                                        nya-bs-option=\"basicSelectRow in editControlModCtrl.basicSelectRowCollection.rows\"\n                                        value=\"$index\">\n                                        <a>{{basicSelectRow.option}}</a>\n                                    </li>\n                                </ol>\n\n                                <p class=\"help-block\">\n                                    {{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n\n                            </div>\n\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n\n        <div class=\"panel panel-default\">\n            <div class=\"panel-body\">\n\n                <div class=\"row\">\n                    <div class=\"col-md-12\">\n                        <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' |\n                            translate}} :</h5>\n                    </div>\n                </div>\n                <hr/>\n\n\n                <div class=\"row\">\n                    <div class=\"col-lg-3 col-md-3\">\n                        <label for=\"basicSelectRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'ADD_NEW_OPTIONS'\n                            | translate}} :</label>\n                    </div>\n                </div>\n\n                <div class=\"row\">\n                    <div>\n\n                        <div class=\"form-group\">\n\n                            <div class=\"col-sm-9 col-xs-9 col-md-9 col-lg-9\">\n                                <input type=\"text\" class=\"form-control\" id=\"inputAddNewBasicOption\"\n                                       placeholder=\"{{'ADD_A_NEW_OPTION' | translate}}\"\n                                       ng-model=\"editControlModCtrl.newOptionBasicSelect.saisie\">\n                            </div>\n\n                            <div class=\"col-sm-3 col-xs-3 col-md-3 col-lg-3\">\n                                <button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.addNewOptionBasicSelect()\">\n                                    {{'ADD' | translate}}\n                                </button>\n                            </div>\n\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"row\">\n                    <div class=\"col-lg-3 col-md-3\">\n                        <label class=\" control-label greyText editPropertiesLabel\">{{'EDIT_REMOVE_OPTIONS' | translate}}\n                            :</label>\n                    </div>\n                </div>\n                <div class=\"row\">\n                    <div class=\"form-group\">\n\n                        <div class-\n                        \"col-lg-12 col-md-12 col-sm-12 col-xs-12\">\n                        <div class=\"container\">\n\n                            <div ng-if=\"editControlModCtrl.basicSelectRowCollection.rows.length === 0\">\n                                <h5 class=\"text-center greyText\"><em>- {{'NO_OPTION_ADD_NEW' | translate}} -</em></h5>\n                            </div>\n\n                            <table ng-if=\"editControlModCtrl.basicSelectRowCollection.rows.length > 0\"\n                                   class=\"table table-striped\">\n                                <thead>\n                                <tr>\n                                    <th st-ratio=\"20\">{{'ORDER' | translate}}</th>\n                                    <th st-ratio=\"55\">{{'OPTION' | translate}}</th>\n                                    <th st-ratio=\"25\"></th>\n                                </tr>\n                                <tr>\n                                    <th st-ratio=\"20\"></th>\n                                    <th st-ratio=\"55\">\n                                        <input ng-model=\"basicSelectFilter\"\n                                               placeholder=\"{{'SEARCH_4_OPTION' | translate}}\"\n                                               class=\"input-sm form-control\" type=\"search\"/>\n                                    </th>\n                                    <th st-ratio=\"25\"></th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                <tr ng-repeat=\"basicSelectRow in editControlModCtrl.basicSelectRowCollection.rows | filter:basicSelectFilter as basicSelectRow\">\n                                    <td st-ratio=\"20\">{{$index}}</td>\n                                    <td st-ratio=\"55\">{{basicSelectRow.option}}</td>\n                                    <td st-ratio=\"25\">\n\n                                        <div class=\"pull-right\">\n                                            <button class=\"btn btn-primary\"\n                                                    ng-click=\"editControlModCtrl.upThisRow($index)\"><i\n                                                    class=\"fa fa-arrow-up\"></i></button>\n\n                                            <button class=\"btn btn-primary\"\n                                                    ng-click=\"editControlModCtrl.downThisRow($index)\"><i\n                                                    class=\"fa fa-arrow-down\"></i></button>\n\n                                            <button class=\"btn btn-danger\"\n                                                    ng-click=\"editControlModCtrl.removeRow($index)\"><i\n                                                    class=\"fa fa-trash-o\"></i></button>\n                                        </div>\n\n                                    </td>\n                                </tr>\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <hr/>\n\n\n            <!--<div class=\"row\">\n                            <div class=\"form-group\">\n                                <label for=\"inputTextRequiredUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">Required :</label>\n                                <div class=\"col-lg-9\">\n                                    <div class=\"checkboxCssCorrection\">&nbsp;</div>\n                                    <input type=\"checkbox\" ng-model=\"nyaSelect.temporyConfig.formlyRequired\" id=\"inputTextRequiredUpdate\">\n                                </div>\n                            </div>\n            </div> -->\n\n\n            <div class=\"marginTopFivepixels\"></div>\n\n\n            <div class=\"row\">\n                <div class=\"form-group\">\n                    <label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION'\n                        | translate}} :</label>\n                    <div class=\"col-lg-9\">\n                        <input type=\"text\" class=\"form-control\"\n                               ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                               id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                    </div>\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>\n\n\n<!-- grouped selects -->\n<div ng-switch-when=\"GroupedSelect\">\n    <div class=\"panel panel-default\">\n        <div class=\"panel-body\">\n            <div class=\"row\">\n                <div class=\"col-md-12\">\n                    <h5 class=\"greyText\"><i class=\"fa fa-eye\"></i>&nbsp; {{'PREVIEW_TAB' | translate}} :</h5>\n                </div>\n            </div>\n            <hr/>\n            <div class=\"row\">\n                <div class=\"col-md-12\">\n                    <div class=\"form-group\">\n                        <label for=\"select\" class=\"control-label textControlLabel\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyLabel}}<span\n                                ng-if=\"editControlModCtrl.nyaSelect.temporyConfig.formlyRequired\"\n                                class=\"textControlLabel\">*</span></label>\n                        <div class=\"\">\n                            <ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12\"\n                                ng-model=\"modelGroupedSelect\" data-live-search=\"true\"\n                                disabled=\"editControlModCtrl.groupedSelectRowCollection.rows.length === 0\">\n                                <li nya-bs-option=\"groupedSelectRow in editControlModCtrl.groupedSelectRowCollection.rows group by groupedSelectRow.group\"\n                                    value=\"$index\">\n                                    <span class=\"dropdown-header\">{{groupedSelectRow.group}}</span>\n                                    <a>\n                                        <span>{{groupedSelectRow.option}}</span>\n                                        <span class=\"glyphicon glyphicon-ok check-mark\"></span>\n                                    </a>\n                                </li>\n                            </ol>\n                            <p class=\"help-block\">{{editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption}}</p>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"panel panel-default\">\n        <div class=\"panel-body\">\n            <div class=\"row\">\n                <div class=\"col-md-12\">\n                    <h5 class=\"greyText\"><i class=\"fa fa-pencil-square-o\"></i>&nbsp; {{'EDIT_PROPERTIES' | translate}} :\n                    </h5>\n                </div>\n            </div>\n            <hr/>\n            <div class=\"row\">\n                <div class=\"col-lg-3 col-md-3\">\n                    <label for=\"groupedSelectRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'ADD_NEW_OPTIONS'\n                        | translate}} :</label>\n                </div>\n            </div>\n            <div class=\"row\">\n                <div>\n                    <div class=\"form-group\">\n                        <div class=\"col-sm-9 col-xs-9 col-md-9 col-lg-9\">\n                            <input type=\"text\" class=\"form-control\" id=\"inputAddNewGroupedOption\"\n                                   placeholder=\"{{'ADD_A_NEW_OPTION' | translate}}\"\n                                   ng-model=\"editControlModCtrl.newOptionGroupedSelect.saisie\">\n                        </div>\n                        <div class=\"col-sm-3 col-xs-3 col-md-3 col-lg-3\">\n                            <button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.addNewOptionGroupedSelect()\">\n                                {{'ADD' | translate}}\n                            </button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class=\"row\">\n                <div class=\"col-lg-3 col-md-3\">\n                    <label for=\"groupedSelectRowCollection\" class=\" control-label greyText editPropertiesLabel\">{{'ADD_NEW_GROUPS'\n                        | translate}} :</label>\n                </div>\n            </div>\n            <div class=\"row\">\n                <div>\n                    <div class=\"form-group\">\n                        <div class=\"col-sm-9 col-xs-9 col-md-9 col-lg-9\">\n                            <input id=\"inputAddNewGroupGroupedOption\" type=\"text\" class=\"form-control\"\n                                   ng-model=\"editControlModCtrl.newGroupGroupedSelect.saisie\"\n                                   id=\"inputTextLabelUpdateGroupedSelect\"\n                                   placeholder=\"{{'ADD_A_NEW_GROUP' | translate}}\">\n                        </div>\n                        <div class=\"col-sm-3 col-xs-3 col-md-3 col-lg-3\">\n                            <button class=\"btn btn-primary\" ng-click=\"editControlModCtrl.addNewGroupToGroupedSelect()\">\n                                {{'ADD' | translate}}\n                            </button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class=\"row\">\n                <div class=\"col-lg-3 col-md-3\">\n                    <label class=\" control-label greyText editPropertiesLabel\">{{'EDIT_GROUPS_OPTIONS' | translate}}\n                        :</label>\n                </div>\n            </div>\n            <div class=\"row\">\n                <div class=\"form-group\">\n                    <div class=\"col-lg-12 col-md-12 col-sm-12 col-xs-12\">\n                        <div class=\"container\">\n                            <div ng-if=\"editControlModCtrl.groupedSelectRowCollection.rows.length === 0\">\n                                <h5 class=\"text-center greyText\"><em>- {{'NO_OPTION_ADD_NEW' | translate}} -</em></h5>\n                            </div>\n                            <table ng-if=\"editControlModCtrl.groupedSelectRowCollection.rows.length > 0\"\n                                   class=\"table table-striped\">\n                                <thead>\n                                <tr>\n                                    <th st-ratio=\"20\">{{'ORDER' | translate}}</th>\n                                    <th st-ratio=\"25\">{{'GROUP' | translate}}</th>\n                                    <th st-ratio=\"30\">{{'OPTION' | translate}}</th>\n                                    <th st-ratio=\"25\"></th>\n                                </tr>\n                                <tr>\n                                    <th st-ratio=\"20\"></th>\n                                    <th st-ratio=\"25\"></th>\n                                    <th st-ratio=\"30\">\n                                        <input ng-model=\"editControlModCtrl.groupedSelectFilter\"\n                                               placeholder=\"{{'SEARCH_4_OPTION' | translate}}\"\n                                               class=\"input-sm form-control\" type=\"search\"/>\n                                    </th>\n                                    <th st-ratio=\"25\"></th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                <tr ng-repeat=\"groupedSelectRow in editControlModCtrl.groupedSelectRowCollection.rows | filter:editControlModCtrl.groupedSelectFilter as groupedSelectRow\">\n                                    <td st-ratio=\"20\">{{$index}}</td>\n                                    <td st-ratio=\"25\">\n                                        <div ng-if=\"editControlModCtrl.groupSelectGroupClick.showList === true\">\n                                            <div ng-if=\"editControlModCtrl.GroupedSelectGroups.list.length === 0\">\n                                                <p class=\"text-left noGroupText\">- {{'NO_GROUP_ADD_NEW' | translate}}\n                                                    -</p>\n                                            </div>\n                                            <div ng-if=\"editControlModCtrl.GroupedSelectGroups.list.length > 0\">\n                                                <ol class=\"nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12 editGroupedSelectnyaSelect\"\n                                                    ng-model=\"groupedSelectRow.group\"\n                                                    id=\"modelGroupedOptionGroupedChoose\"\n                                                    disabled=\"editControlModCtrl.GroupedSelectGroups.list.length === 0\">\n                                                    <li class=\"nya-bs-option\"\n                                                        nya-bs-option=\"GroupedSelectGroup in editControlModCtrl.GroupedSelectGroups.list\"\n                                                        value=\"GroupedSelectGroup\">\n                                                        <a>{{GroupedSelectGroup}}</a>\n                                                    </li>\n                                                </ol>\n                                            </div>\n                                        </div>\n                                        <div ng-if=\"editControlModCtrl.groupSelectGroupClick.showList === false\">\n                                            {{groupedSelectRow.group}}\n                                        </div>\n                                    </td>\n                                    <td st-ratio=\"30\">{{groupedSelectRow.option}}</td>\n                                    <td st-ratio=\"25\">\n                                        <div class=\"pull-right\">\n                                            <button class=\"btn btn-primary\"\n                                                    ng-click=\"editControlModCtrl.upThisGroupedSelectRow($index)\"><i\n                                                    class=\"fa fa-arrow-up\"></i></button>\n                                            <button class=\"btn btn-primary\"\n                                                    ng-click=\"editControlModCtrl.downThisGroupedSelectRow($index)\"><i\n                                                    class=\"fa fa-arrow-down\"></i></button>\n                                            <button class=\"btn btn-warning\"\n                                                    ng-click=\"editControlModCtrl.showGroupListToChoose()\"><i\n                                                    class=\"fa fa-pencil-square-o\"></i></button>\n                                            <button class=\"btn btn-danger\"\n                                                    ng-click=\"editControlModCtrl.removeGroupedSelectRow($index)\"><i\n                                                    class=\"fa fa-trash-o\"></i></button>\n                                        </div>\n                                    </td>\n                                </tr>\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <hr/>\n            <div class=\"marginTopFivepixels\"></div>\n            <div class=\"row\">\n                <div class=\"form-group\">\n                    <label for=\"inputTextDescriptionUpdate\" class=\"col-lg-3 control-label greyText editPropertiesLabel\">{{'DESCRIPTION'\n                        | translate}} :</label>\n                    <div class=\"col-lg-9\">\n                        <input type=\"text\" class=\"form-control\"\n                               ng-model=\"editControlModCtrl.nyaSelect.temporyConfig.formlyDesciption\"\n                               id=\"inputTextDescriptionUpdate\" placeholder=\"{{'ADDEDIT_DESCRIPTION' | translate}}\">\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n</div>\n</div>\n\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-class=\"{'disabled': editControlModCtrl.nyaSelect.selectedControl === 'none'}\"\n            ng-click=\"editControlModCtrl.ok()\">{{'OK' | translate}}\n    </button>\n    <button class=\"btn btn-warning\" ng-click=\"editControlModCtrl.cancel()\">{{'CANCEL' | translate}}</button>\n</div>\n\n";
+        global.define = __define;
+        return module.exports;
 });
-$__System.register('18', ['13', '14', '15', '16', '17'], function (_export) {
-	var _createClass, _classCallCheck, initDebugModel, initTabModel, initColumnTemplate, initLineTemplate, editControlModalTemplate, EDIT_MODAL_CONTROLLER_NAME, EDIT_MODAL_CONTROLLERAS_NAME, STEP_WAY_MAIN_CONTROLLER_NAME, STEP_WAY_MAIN_CONTROLLERAS_NAME, edaStepWayEasyFormGenController, toInject;
+
+    $__System.register('13', ['11', '12', '14', '15', '16'], function (_export) {
+        var initDebugModel, initTabModel, initColumnTemplate, initLineTemplate, editControlModalTemplate, EDIT_MODAL_CONTROLLER_NAME, EDIT_MODAL_CONTROLLERAS_NAME, _createClass, _classCallCheck, STEP_WAY_MAIN_CONTROLLER_NAME, STEP_WAY_MAIN_CONTROLLERAS_NAME, edaStepWayEasyFormGenController, toInject;
 
 	return {
-		setters: [function (_) {
-			_createClass = _['default'];
-		}, function (_2) {
-			_classCallCheck = _2['default'];
-		}, function (_3) {
+        setters: [function (_3) {
 			initDebugModel = _3.initDebugModel;
 			initTabModel = _3.initTabModel;
 			initColumnTemplate = _3.initColumnTemplate;
@@ -1824,6 +1304,10 @@ $__System.register('18', ['13', '14', '15', '16', '17'], function (_export) {
 		}, function (_5) {
 			EDIT_MODAL_CONTROLLER_NAME = _5.EDIT_MODAL_CONTROLLER_NAME;
 			EDIT_MODAL_CONTROLLERAS_NAME = _5.EDIT_MODAL_CONTROLLERAS_NAME;
+        }, function (_) {
+            _createClass = _['default'];
+        }, function (_2) {
+            _classCallCheck = _2['default'];
 		}],
 		execute: function () {
 			/* global angular */
@@ -1878,8 +1362,8 @@ $__System.register('18', ['13', '14', '15', '16', '17'], function (_export) {
 
 						this.$modalProxy.initNyaSelect(this.nyaSelect);
 
-						console.info('main controller : init nyaSelect model');
-						console.dir(angular.copy(this.nyaSelect));
+                        //console.info(`main controller : init nyaSelect model`);
+                        //console.dir(angular.copy(this.nyaSelect));
 					}
 				}, {
 					key: 'onSubmit',
@@ -2124,11 +1608,11 @@ $__System.register('18', ['13', '14', '15', '16', '17'], function (_export) {
 		}
 	};
 });
-$__System.register('1a', ['18', '19'], function (_export) {
+    $__System.register('17', ['10', '13'], function (_export) {
 	/* global angular */
 	'use strict';
 
-	var edaStepWayEasyFormGenController, STEP_WAY_MAIN_CONTROLLER_NAME, STEP_WAY_MAIN_CONTROLLERAS_NAME, easyformTemplate, STEP_WAY_DIRECTIVE_NAME;
+        var easyformTemplate, edaStepWayEasyFormGenController, STEP_WAY_MAIN_CONTROLLER_NAME, STEP_WAY_MAIN_CONTROLLERAS_NAME, STEP_WAY_DIRECTIVE_NAME;
 
 	function edaStepWayEasyFormGenDirective($templateCache, $timeout, $formlyProxy, $modalProxy) {
 
@@ -2235,12 +1719,12 @@ $__System.register('1a', ['18', '19'], function (_export) {
 	}
 
 	return {
-		setters: [function (_2) {
+        setters: [function (_) {
+            easyformTemplate = _['default'];
+        }, function (_2) {
 			edaStepWayEasyFormGenController = _2['default'];
 			STEP_WAY_MAIN_CONTROLLER_NAME = _2.STEP_WAY_MAIN_CONTROLLER_NAME;
 			STEP_WAY_MAIN_CONTROLLERAS_NAME = _2.STEP_WAY_MAIN_CONTROLLERAS_NAME;
-		}, function (_) {
-			easyformTemplate = _['default'];
 		}],
 		execute: function () {
 			STEP_WAY_DIRECTIVE_NAME = 'edaStepWayEasyFormGen';
@@ -2252,7 +1736,7 @@ $__System.register('1a', ['18', '19'], function (_export) {
 		}
 	};
 });
-$__System.register('1b', [], function (_export) {
+    $__System.register('18', [], function (_export) {
 	/* global angular */
 	'use strict';
 
@@ -2302,7 +1786,19 @@ $__System.register('1b', [], function (_export) {
 
 		//list of controls
 		function controlsList() {
-			var controls = [{ name: 'empty', enabled: true }, { name: 'Header', enabled: true }, { name: 'Subtitle', enabled: true }, { name: 'TextInput', enabled: true }, { name: 'Password', enabled: true }, { name: 'Email', enabled: true }, { name: 'Date', enabled: true }, { name: 'Texarea', enabled: true }, { name: 'RichTextEditor', enabled: true }, { name: 'Radio', enabled: true }, { name: 'Checkbox', enabled: true }, { name: 'BasicSelect', enabled: true }, { name: 'GroupedSelect', enabled: true }];
+            var controls = [{name: 'empty', enabled: true}, {name: 'Header', enabled: true}, {
+                name: 'Subtitle',
+                enabled: true
+            }, {name: 'TextInput', enabled: true}, {name: 'Password', enabled: true}, {
+                name: 'Number',
+                enabled: true
+            }, {name: 'Email', enabled: true}, {name: 'Date', enabled: true}, {
+                name: 'Texarea',
+                enabled: true
+            }, {name: 'RichTextEditor', enabled: true}, {name: 'Radio', enabled: true}, {
+                name: 'Checkbox',
+                enabled: true
+            }, {name: 'BasicSelect', enabled: true}, {name: 'GroupedSelect', enabled: true}];
 			return controls;
 		}
 
@@ -2436,7 +1932,7 @@ $__System.register('1b', [], function (_export) {
 		}
 	};
 });
-$__System.register('1c', ['18', '1a', '1b'], function (_export) {
+    $__System.register('19', ['13', '17', '18'], function (_export) {
   /* global angular */
   'use strict';
 
@@ -2445,12 +1941,12 @@ $__System.register('1c', ['18', '1a', '1b'], function (_export) {
     setters: [function (_) {
       edaStepWayEasyFormGenController = _['default'];
       STEP_WAY_MAIN_CONTROLLER_NAME = _.STEP_WAY_MAIN_CONTROLLER_NAME;
-    }, function (_a) {
-      edaStepWayEasyFormGenDirective = _a['default'];
-      STEP_WAY_DIRECTIVE_NAME = _a.STEP_WAY_DIRECTIVE_NAME;
-    }, function (_b) {
-      easyFormSteWayConfig = _b['default'];
-      EASY_FORM_STEP_WAY_CONFIG_NAME = _b.EASY_FORM_STEP_WAY_CONFIG_NAME;
+    }, function (_2) {
+        edaStepWayEasyFormGenDirective = _2['default'];
+        STEP_WAY_DIRECTIVE_NAME = _2.STEP_WAY_DIRECTIVE_NAME;
+    }, function (_3) {
+        easyFormSteWayConfig = _3['default'];
+        EASY_FORM_STEP_WAY_CONFIG_NAME = _3.EASY_FORM_STEP_WAY_CONFIG_NAME;
     }],
     execute: function () {
       STEP_WAY_MAIN_MODULE = 'easyFormStepwayMainModule';
@@ -2459,7 +1955,471 @@ $__System.register('1c', ['18', '1a', '1b'], function (_export) {
     }
   };
 });
-$__System.register('1d', ['17'], function (_export) {
+    $__System.register('14', ['15', '16'], function (_export) {
+        var _createClass, _classCallCheck, EDIT_MODAL_CONTROLLER_NAME, EDIT_MODAL_CONTROLLERAS_NAME, editControlModalController, toInject;
+
+        return {
+            setters: [function (_2) {
+                _createClass = _2['default'];
+            }, function (_3) {
+                _classCallCheck = _3['default'];
+            }],
+            execute: function () {
+                /* global angular */
+                /* global _ */
+                'use strict';
+
+                EDIT_MODAL_CONTROLLER_NAME = 'editControlModalController';
+                EDIT_MODAL_CONTROLLERAS_NAME = 'editControlModCtrl';
+
+                editControlModalController = (function () {
+                    function editControlModalController($modalInstance, nyaSelect, toaster, selectOptionManage, $modalProxy) {
+                        _classCallCheck(this, editControlModalController);
+
+                        this.$modalInstance = $modalInstance;
+                        this.nyaSelect = nyaSelect;
+                        this.toaster = toaster;
+                        this.selectOptionManage = selectOptionManage;
+                        this.$modalProxy = $modalProxy;
+
+                        this.init();
+                    }
+
+                    _createClass(editControlModalController, [{
+                        key: 'init',
+                        value: function init() {
+                            var initOptionModel = {rows: []};
+
+                            this.radioRowCollection = initOptionModel;
+                            this.newOptionRadio = {saisie: ''};
+                            this.basicSelectRowCollection = initOptionModel;
+                            this.newOptionBasicSelect = {saisie: ''};
+                            this.groupedSelectRowCollection = initOptionModel;
+                            this.newOptionGroupedSelect = {saisie: ''};
+                            this.GroupedSelectGroups = {list: []};
+                            this.newGroupGroupedSelect = {saisie: ''};
+                            this.groupSelectGroupClick = {showList: false};
+                            this.demodt = {};
+                            this.dateOptions = this.dateOptionsInit();
+                            this.demodt.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+                            this.nyaSelect.selectedControl = this.nyaSelect.temporyConfig.selectedControl;
+                            this.nyaSelectFiltered = {};
+                            this.modelNyaSelect = {};
+
+                            //init today date
+                            this.today();
+                            //init nyaSelect model depending selected control
+                            this.initNyaSelectConformingSelectedControl();
+                        }
+                    }, {
+                        key: 'initNyaSelectConformingSelectedControl',
+                        value: function initNyaSelectConformingSelectedControl() {
+                            //place nya-select to selection if not none :
+                            if (this.nyaSelect.selectedControl !== 'none') {
+                                for (var i = this.nyaSelect.controls.length - 1; i >= 0; i--) {
+                                    if (this.nyaSelect.controls[i].id === this.nyaSelect.selectedControl) this.modelNyaSelect = this.nyaSelect.controls[i];
+                                }
+                                if (this.nyaSelect.selectedControl === 'BasicSelect') this.bindBasicSelectFromNYA();
+                                if (this.nyaSelect.selectedControl === 'GroupedSelect') this.bindGroupedSelectFromNYA();
+                                if (this.nyaSelect.selectedControl === 'Radio') this.bindRadioFromNYA();
+                            }
+                            this.initNyaSelectFiltered();
+
+                            console.info('modal controller : nyaSelect');
+                            console.dir(this.nyaSelect);
+                        }
+                    }, {
+                        key: 'initNyaSelectFiltered',
+                        value: function initNyaSelectFiltered() {
+                            var listCtrl = [].concat(this.$modalProxy.getFilteredNyaSelectObject());
+                            angular.extend(this.nyaSelectFiltered, {
+                                'controls': listCtrl,
+                                'selectedControl': this.nyaSelect.selectedControl,
+                                'temporyConfig': this.nyaSelect.temporyConfig
+                            });
+                        }
+                    }, {
+                        key: 'bindBasicSelectFromNYA',
+                        value: function bindBasicSelectFromNYA() {
+                            if (this.nyaSelect.temporyConfig.formlyOptions.length > 0) {
+                                for (var i = 0; i <= this.nyaSelect.temporyConfig.formlyOptions.length - 1; i++) {
+                                    var newOption = {
+                                        'option': this.nyaSelect.temporyConfig.formlyOptions[i].name,
+                                        'order': i,
+                                        'group': ''
+                                    };
+                                    this.basicSelectRowCollection.rows.push(newOption);
+                                }
+                            }
+                        }
+                    }, {
+                        key: 'bindRadioFromNYA',
+                        value: function bindRadioFromNYA() {
+                            if (this.nyaSelect.temporyConfig.formlyOptions.length > 0) {
+                                for (var i = 0; i <= this.nyaSelect.temporyConfig.formlyOptions.length - 1; i++) {
+                                    var newOption = {
+                                        'option': this.nyaSelect.temporyConfig.formlyOptions[i].name,
+                                        'order': i,
+                                        'group': ''
+                                    };
+                                    this.radioRowCollection.rows.push(newOption);
+                                }
+                            }
+                        }
+                    }, {
+                        key: 'bindGroupedSelectFromNYA',
+                        value: function bindGroupedSelectFromNYA() {
+                            if (this.nyaSelect.temporyConfig.formlyOptions.length > 0) {
+                                for (var i = 0; i <= this.nyaSelect.temporyConfig.formlyOptions.length - 1; i++) {
+                                    var newOption = {
+                                        'option': this.nyaSelect.temporyConfig.formlyOptions[i].name,
+                                        'order': i,
+                                        'group': this.nyaSelect.temporyConfig.formlyOptions[i].group
+                                    };
+                                    this.groupedSelectRowCollection.rows.push(newOption);
+                                }
+                                var filteredgroup = _.uniq(_.pluck(this.groupedSelectRowCollection.rows, 'group'));
+                                angular.copy(filteredgroup, this.GroupedSelectGroups.list);
+                            }
+                        }
+                    }, {
+                        key: 'addNewOptionRadio',
+                        value: function addNewOptionRadio() {
+                            var result = this.selectOptionManage.addNewOptionRadio(this.radioRowCollection, this.newOptionRadio.saisie);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: '\'' + this.newOptionRadio.saisie + '\' cannot be added.',
+                                    showCloseButton: true
+                                });
+                            }
+                            this.newOptionRadio = {saisie: ''}; //reset input
+                        }
+                    }, {
+                        key: 'removeRadioRow',
+                        value: function removeRadioRow(index) {
+                            var result = this.selectOptionManage.removeOption(this.radioRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Delete was cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'upThisRadioRow',
+                        value: function upThisRadioRow(index) {
+                            var result = this.selectOptionManage.upthisOption(this.radioRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Operation cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'downThisRadioRow',
+                        value: function downThisRadioRow(index) {
+                            var result = this.selectOptionManage.downthisOption(this.radioRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Operation cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'addNewOptionBasicSelect',
+                        value: function addNewOptionBasicSelect() {
+                            var result = this.selectOptionManage.addNewOptionBasicSelect(this.basicSelectRowCollection, this.newOptionBasicSelect.saisie);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: '\'' + this.newOptionBasicSelect.saisie + '\' cannot be added.',
+                                    showCloseButton: true
+                                });
+                            }
+                            this.newOptionBasicSelect = {saisie: ''}; //reset input
+                        }
+                    }, {
+                        key: 'removeRow',
+                        value: function removeRow(index) {
+                            var result = this.selectOptionManage.removeOption(this.basicSelectRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Delete was cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'upThisRow',
+                        value: function upThisRow(index) {
+                            var result = this.selectOptionManage.upthisOption(this.basicSelectRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Operation cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'downThisRow',
+                        value: function downThisRow(index) {
+                            var result = this.selectOptionManage.downthisOption(this.basicSelectRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Operation cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'showGroupListToChoose',
+                        value: function showGroupListToChoose() {
+                            this.groupSelectGroupClick.showList = !this.groupSelectGroupClick.showList;
+                        }
+                    }, {
+                        key: 'addNewGroupToGroupedSelect',
+                        value: function addNewGroupToGroupedSelect() {
+                            if (this.newGroupGroupedSelect.saisie !== '') {
+                                for (var i = this.GroupedSelectGroups.list.length - 1; i >= 0; i--) {
+                                    if (this.GroupedSelectGroups.list[i] === this.newGroupGroupedSelect.saisie) {
+                                        this.toaster.pop({
+                                            type: 'warning',
+                                            timeout: 2000,
+                                            title: 'Group already exists',
+                                            body: 'No group added.',
+                                            showCloseButton: true
+                                        });
+                                    }
+                                }
+                                this.GroupedSelectGroups.list.push(this.newGroupGroupedSelect.saisie);
+                            } else {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: 'Not a valid group to add',
+                                    body: 'No group added.',
+                                    showCloseButton: true
+                                });
+                            }
+                            this.newGroupGroupedSelect.saisie = '';
+                        }
+                    }, {
+                        key: 'addNewOptionGroupedSelect',
+                        value: function addNewOptionGroupedSelect() {
+                            var result = this.selectOptionManage.addNewOptionGroupedSelect(this.groupedSelectRowCollection, this.newOptionGroupedSelect.saisie, '');
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: '\'' + this.newOptionGroupedSelect.saisie + '\' cannot be added.',
+                                    showCloseButton: true
+                                });
+                            }
+                            //bind nya : dont bind here $apply is not done fast enough
+                            //bindGroupedSelectToNya();
+                            //reset input
+                            this.newOptionGroupedSelect = {saisie: ''};
+                        }
+                    }, {
+                        key: 'removeGroupedSelectRow',
+                        value: function removeGroupedSelectRow(index) {
+                            var result = this.selectOptionManage.removeOption(this.groupedSelectRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Delete was cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'upThisGroupedSelectRow',
+                        value: function upThisGroupedSelectRow(index) {
+                            var result = this.selectOptionManage.upthisOption(this.groupedSelectRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Operation cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'downThisGroupedSelectRow',
+                        value: function downThisGroupedSelectRow(index) {
+                            var result = this.selectOptionManage.downthisOption(this.groupedSelectRowCollection, index);
+                            if (result.resultFlag === false) {
+                                this.toaster.pop({
+                                    type: 'warning',
+                                    timeout: 2000,
+                                    title: result.details,
+                                    body: 'Operation cancelled.',
+                                    showCloseButton: true
+                                });
+                            }
+                        }
+                    }, {
+                        key: 'today',
+                        value: function today() {
+                            this.demodt.dt = new Date();
+                        }
+                    }, {
+                        key: 'clear',
+                        value: function clear() {
+                            this.demodt.dt = null;
+                        }
+                    }, {
+                        key: 'open',
+                        value: function open($event) {
+                            $event.preventDefault();
+                            $event.stopPropagation();
+                            this.demodt.opened = true;
+                        }
+                    }, {
+                        key: 'dateOptionsInit',
+                        value: function dateOptionsInit() {
+                            return {
+                                formatYear: 'yy',
+                                startingDay: 1,
+                                showWeeks: true,
+                                initDate: null
+                            };
+                        }
+                    }, {
+                        key: 'selectThisControl',
+                        value: function selectThisControl(controlName) {
+                            this.nyaSelect.selectedControl = 'none';
+                            this.resetTemporyConfig();
+                            for (var i = this.nyaSelect.controls.length - 1; i >= 0; i--) {
+                                if (this.nyaSelect.controls[i].id === controlName) this.nyaSelect.selectedControl = this.nyaSelect.controls[i].id;
+                            }
+                            if (this.nyaSelect.selectedControl === 'Date') this.initDatePicker();
+                        }
+                    }, {
+                        key: 'ok',
+                        value: function ok() {
+                            if (this.nyaSelect.selectedControl === 'BasicSelect') this.bindBasicSelectToNya();
+                            if (this.nyaSelect.selectedControl === 'GroupedSelect') this.bindGroupedSelectToNya();
+                            if (this.nyaSelect.selectedControl === 'Radio') this.bindRadioToNya();
+                            //save config to control
+                            this.$modalProxy.applyConfigToSelectedControl(this.nyaSelect);
+                            //return current model to parent controller :
+                            this.$modalInstance.close(this.nyaSelect);
+                        }
+                    }, {
+                        key: 'cancel',
+                        value: function cancel() {
+                            this.$modalInstance.dismiss('cancel');
+                        }
+                    }, {
+                        key: 'bindBasicSelectToNya',
+                        value: function bindBasicSelectToNya() {
+                            var resetNyASelectOptions = [];
+                            this.nyaSelect.temporyConfig.formlyOptions = resetNyASelectOptions;
+                            if (this.basicSelectRowCollection.rows.length > 0) {
+                                for (var i = 0; i <= this.basicSelectRowCollection.rows.length - 1; i++) {
+                                    var newOption = {
+                                        'name': this.basicSelectRowCollection.rows[i].option,
+                                        'value': i,
+                                        'group': ''
+                                    };
+                                    this.nyaSelect.temporyConfig.formlyOptions.push(newOption);
+                                }
+                            }
+                        }
+                    }, {
+                        key: 'bindGroupedSelectToNya',
+                        value: function bindGroupedSelectToNya() {
+                            this.nyaSelect.temporyConfig.formlyOptions = [];
+                            for (var i = 0; i <= this.groupedSelectRowCollection.rows.length - 1; i++) {
+                                var newOption = {
+                                    'name': this.groupedSelectRowCollection.rows[i].option,
+                                    'value': i,
+                                    'group': this.groupedSelectRowCollection.rows[i].group
+                                };
+                                this.nyaSelect.temporyConfig.formlyOptions.push(newOption);
+                            }
+                        }
+                    }, {
+                        key: 'bindRadioToNya',
+                        value: function bindRadioToNya() {
+                            var resetNyASelectOptions = [];
+                            this.nyaSelect.temporyConfig.formlyOptions = resetNyASelectOptions;
+                            if (this.radioRowCollection.rows.length > 0) {
+                                for (var i = 0; i <= this.radioRowCollection.rows.length - 1; i++) {
+                                    var newOption = {
+                                        'name': this.radioRowCollection.rows[i].option,
+                                        'value': i,
+                                        'group': ''
+                                    };
+                                    this.nyaSelect.temporyConfig.formlyOptions.push(newOption);
+                                }
+                            }
+                        }
+                    }, {
+                        key: 'initDatePicker',
+                        value: function initDatePicker() {
+                            this.nyaSelect.temporyConfig.datepickerPopup = this.demodt.formats[0];
+                        }
+                    }, {
+                        key: 'resetTemporyConfig',
+                        value: function resetTemporyConfig() {
+                            this.nyaSelectFiltered.temporyConfig = {
+                                formlyLabel: '',
+                                formlyRequired: false,
+                                formlyPlaceholder: '',
+                                formlyDesciption: '',
+                                formlyOptions: []
+                            };
+                        }
+                    }]);
+
+                    return editControlModalController;
+                })();
+
+                toInject = ['$modalInstance', 'nyaSelect', 'toaster', 'selectOptionManage', '$modalProxy'];
+
+                editControlModalController.$inject = toInject;
+
+                _export('default', editControlModalController);
+
+                _export('EDIT_MODAL_CONTROLLER_NAME', EDIT_MODAL_CONTROLLER_NAME);
+
+                _export('EDIT_MODAL_CONTROLLERAS_NAME', EDIT_MODAL_CONTROLLERAS_NAME);
+            }
+        };
+    });
+    $__System.register('1a', ['14'], function (_export) {
 	/* global angular */
 	'use strict';
 
@@ -2476,437 +2436,462 @@ $__System.register('1d', ['17'], function (_export) {
 		}
 	};
 });
-$__System.register('1e', [], function (_export) {
-	/* global angular */
+    $__System.register('1b', [], function (_export) {
+        /* global angular */
 
-	'use strict';
+        'use strict';
 
-	var resetNyaSelect, getResetConfig, returnControlFromAddCtrlModalModel, validKeyUniqueness;
-	return {
-		setters: [],
-		execute: function () {
-			resetNyaSelect = function resetNyaSelect(nyaSelectObj) {
+        var resetNyaSelect, getResetConfig, returnControlFromAddCtrlModalModel, validKeyUniqueness;
+        return {
+            setters: [],
+            execute: function () {
+                resetNyaSelect = function resetNyaSelect(nyaSelectObj) {
 
-				var newNyaSelectObj = {
-					controls: [{
-						id: 'empty',
-						name: 'no control',
-						subtitle: 'no control',
-						group: 'Blank',
-						formlyType: 'blank',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {}
-					}, {
-						id: 'Header',
-						name: 'Header',
-						subtitle: 'no control',
-						group: 'Decoration',
-						formlyType: 'header',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {}
-					}, {
-						id: 'Subtitle',
-						name: 'Subtitle',
-						subtitle: 'no control',
-						group: 'Decoration',
-						formlyType: 'subTitle',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {}
-					}, {
-						id: 'TextInput',
-						name: 'Text input',
-						subtitle: 'Text input',
-						group: 'input',
-						formlyType: 'input',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this Text input field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'Password',
-						name: 'Password',
-						subtitle: 'Password',
-						group: 'input',
-						formlyType: 'input',
-						formlySubtype: 'password',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this Password field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'Email',
-						name: 'Email',
-						subtitle: 'Email',
-						group: 'input',
-						formlyType: 'input',
-						formlySubtype: 'email',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
+                    var newNyaSelectObj = {
+                        controls: [{
+                            id: 'empty',
+                            name: 'no control',
+                            subtitle: 'no control',
+                            group: 'Blank',
+                            formlyType: 'blank',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {}
+                        }, {
+                            id: 'Header',
+                            name: 'Header',
+                            subtitle: 'no control',
+                            group: 'Decoration',
+                            formlyType: 'header',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {}
+                        }, {
+                            id: 'Subtitle',
+                            name: 'Subtitle',
+                            subtitle: 'no control',
+                            group: 'Decoration',
+                            formlyType: 'subTitle',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {}
+                        }, {
+                            id: 'TextInput',
+                            name: 'Text input',
+                            subtitle: 'Text input',
+                            group: 'input',
+                            formlyType: 'input',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Text input field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'Password',
+                            name: 'Password',
+                            subtitle: 'Password',
+                            group: 'input',
+                            formlyType: 'input',
+                            formlySubtype: 'password',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Password field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'Number',
+                            name: 'Number',
+                            subtitle: 'Number',
+                            group: 'input',
+                            formlyType: 'input',
+                            formlySubtype: 'number',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Number field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'Email',
+                            name: 'Email',
+                            subtitle: 'Email',
+                            group: 'input',
+                            formlyType: 'input',
+                            formlySubtype: 'email',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
 
-						formlyValidators: {
-							emailShape: {
-								expression: function expression(viewValue, modelValue) {
-									var value = modelValue || viewValue;
-									return (/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/.test(value)
-									);
-								},
-								message: '$viewValue + \' is not a valid email\''
-							}
-						},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'		
-									var defaultReturnMsg = 'this Email field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									//check if validation is really dued to require validation
-									//and not another validation like emailShape validator
-									if (scope.to.required) return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'Date',
-						name: 'Date',
-						subtitle: 'Date',
-						group: 'input',
-						formlyType: 'datepicker',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						datepickerPopup: 'dd-MMMM-yyyy',
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this Date field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'Texarea',
-						name: 'Textarea',
-						subtitle: 'Textarea',
-						group: 'Textarea',
-						formlyType: 'textarea',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this Textarea field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'RichTextEditor',
-						name: 'RichTextEditor',
-						subtitle: 'RichTextEditor',
-						group: 'Textarea',
-						formlyType: 'richEditor',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this RichTextEditor field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'Radio',
-						name: 'Radio',
-						subtitle: 'Radio',
-						options: [],
-						group: 'Radio',
-						formlyType: 'radio',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this Password field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'Checkbox',
-						name: 'Checkbox',
-						subtitle: 'Checkbox',
-						group: 'Checkbox',
-						formlyType: 'checkbox',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this Checkbox field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'BasicSelect',
-						name: 'Basic select',
-						subtitle: 'Basic select',
-						options: [],
-						group: 'Select',
-						formlyType: 'basicSelect',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this Basic select field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}, {
-						id: 'GroupedSelect',
-						name: 'Grouped Select',
-						subtitle: 'Grouped Select',
-						options: [],
-						group: 'Select',
-						formlyType: 'groupedSelect',
-						formlySubtype: '',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyOptions: [],
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {
-							messages: {
-								required: function required(viewValue, modelValue, scope) {
-									//return a required validation message :
-									//-> '<label as name> is required '
-									//-> or if not exists or empty just 'this field is required'
-									var defaultReturnMsg = 'this Grouped Select field is required';
-									var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
-									return returnMsg;
-								}
-							}
-						}
-					}],
-					selectedControl: 'none',
-					temporyConfig: {
-						selectedControl: 'none',
-						formlyLabel: '',
-						formlyRequired: false,
-						formlyDesciption: '',
-						formlyPlaceholder: '',
-						formlyOptions: [],
-						//expressions/validation fields
-						formlyExpressionProperties: {},
-						formlyValidators: {},
-						formlyValidation: {}
-					}
+                            formlyValidators: {
+                                emailShape: {
+                                    expression: function expression(viewValue, modelValue) {
+                                        var value = modelValue || viewValue;
+                                        return (/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/.test(value)
+                                        );
+                                    },
+                                    message: '$viewValue + \' is not a valid email\''
+                                }
+                            },
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Email field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        //check if validation is really dued to require validation
+                                        //and not another validation like emailShape validator
+                                        if (scope.to.required) return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'Date',
+                            name: 'Date',
+                            subtitle: 'Date',
+                            group: 'input',
+                            formlyType: 'datepicker',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            datepickerPopup: 'dd-MMMM-yyyy',
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Date field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'Texarea',
+                            name: 'Textarea',
+                            subtitle: 'Textarea',
+                            group: 'Textarea',
+                            formlyType: 'textarea',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Textarea field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'RichTextEditor',
+                            name: 'RichTextEditor',
+                            subtitle: 'RichTextEditor',
+                            group: 'Textarea',
+                            formlyType: 'richEditor',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this RichTextEditor field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'Radio',
+                            name: 'Radio',
+                            subtitle: 'Radio',
+                            options: [],
+                            group: 'Radio',
+                            formlyType: 'radio',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Password field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'Checkbox',
+                            name: 'Checkbox',
+                            subtitle: 'Checkbox',
+                            group: 'Checkbox',
+                            formlyType: 'checkbox',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Checkbox field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'BasicSelect',
+                            name: 'Basic select',
+                            subtitle: 'Basic select',
+                            options: [],
+                            group: 'Select',
+                            formlyType: 'basicSelect',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Basic select field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }, {
+                            id: 'GroupedSelect',
+                            name: 'Grouped Select',
+                            subtitle: 'Grouped Select',
+                            options: [],
+                            group: 'Select',
+                            formlyType: 'groupedSelect',
+                            formlySubtype: '',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyOptions: [],
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {
+                                messages: {
+                                    required: function required(viewValue, modelValue, scope) {
+                                        //return a required validation message :
+                                        //-> '<label as name> is required '
+                                        //-> or if not exists or empty just 'this field is required'
+                                        var defaultReturnMsg = 'this Grouped Select field is required';
+                                        var returnMsg = typeof scope.to.label !== 'undefined' ? scope.to.label !== '' ? scope.to.label + ' is required' : defaultReturnMsg : defaultReturnMsg;
+                                        return returnMsg;
+                                    }
+                                }
+                            }
+                        }],
+                        selectedControl: 'none',
+                        temporyConfig: {
+                            selectedControl: 'none',
+                            formlyLabel: '',
+                            formlyRequired: false,
+                            formlyDesciption: '',
+                            formlyPlaceholder: '',
+                            formlyOptions: [],
+                            //expressions/validation fields
+                            formlyExpressionProperties: {},
+                            formlyValidators: {},
+                            formlyValidation: {}
+                        }
 
-				};
+                    };
 
-				//reset
-				angular.copy(newNyaSelectObj, nyaSelectObj);
-				return true;
-			};
+                    //reset
+                    angular.copy(newNyaSelectObj, nyaSelectObj);
+                    return true;
+                };
 
-			getResetConfig = function getResetConfig() {
-				var emptyConfig = {};
-				angular.extend(emptyConfig, {
-					formlyLabel: '',
-					formlyRequired: false,
-					formlyPlaceholder: '',
-					formlyDesciption: '',
-					formlyOptions: []
-				});
-				return emptyConfig;
-			};
+                getResetConfig = function getResetConfig() {
+                    var emptyConfig = {};
+                    angular.extend(emptyConfig, {
+                        formlyLabel: '',
+                        formlyRequired: false,
+                        formlyPlaceholder: '',
+                        formlyDesciption: '',
+                        formlyOptions: []
+                    });
+                    return emptyConfig;
+                };
 
-			/**
-   	* data passed back to parent controller 
-   	* after control being finsihed editing in modal
-   	*/
+                /**
+                 * data passed back to parent controller
+                 * after control being finsihed editing in modal
+                 */
 
-			returnControlFromAddCtrlModalModel = function returnControlFromAddCtrlModalModel(CtrlModalModel) {
+                returnControlFromAddCtrlModalModel = function returnControlFromAddCtrlModalModel(CtrlModalModel) {
 
-				var modelToReturn = {
-					selectedControl: 'none',
-					formlyType: 'none',
-					formlySubtype: 'none',
-					formlyLabel: '',
-					formlyRequired: false,
-					formlyDesciption: '',
-					formlyPlaceholder: '',
-					formlyOptions: [],
-					//validation fields
-					formlyExpressionProperties: {},
-					formlyValidators: {},
-					formlyValidation: {}
-				};
+                    var modelToReturn = {
+                        selectedControl: 'none',
+                        formlyType: 'none',
+                        formlySubtype: 'none',
+                        formlyLabel: '',
+                        formlyRequired: false,
+                        formlyDesciption: '',
+                        formlyPlaceholder: '',
+                        formlyOptions: [],
+                        //validation fields
+                        formlyExpressionProperties: {},
+                        formlyValidators: {},
+                        formlyValidation: {}
+                    };
 
-				for (var i = CtrlModalModel.controls.length - 1; i >= 0; i--) {
-					if (CtrlModalModel.selectedControl === CtrlModalModel.controls[i].id) {
-						modelToReturn.selectedControl = CtrlModalModel.selectedControl;
-						modelToReturn.formlyType = CtrlModalModel.controls[i].formlyType;
-						modelToReturn.formlySubtype = CtrlModalModel.controls[i].formlySubtype;
-						modelToReturn.formlyLabel = CtrlModalModel.controls[i].formlyLabel;
-						modelToReturn.formlyRequired = CtrlModalModel.controls[i].formlyRequired;
-						modelToReturn.formlyDesciption = CtrlModalModel.controls[i].formlyDesciption;
-						modelToReturn.formlyPlaceholder = CtrlModalModel.controls[i].formlyPlaceholder;
-						modelToReturn.formlyOptions = CtrlModalModel.controls[i].formlyOptions;
+                    for (var i = CtrlModalModel.controls.length - 1; i >= 0; i--) {
+                        if (CtrlModalModel.selectedControl === CtrlModalModel.controls[i].id) {
+                            modelToReturn.selectedControl = CtrlModalModel.selectedControl;
+                            modelToReturn.formlyType = CtrlModalModel.controls[i].formlyType;
+                            modelToReturn.formlySubtype = CtrlModalModel.controls[i].formlySubtype;
+                            modelToReturn.formlyLabel = CtrlModalModel.controls[i].formlyLabel;
+                            modelToReturn.formlyRequired = CtrlModalModel.controls[i].formlyRequired;
+                            modelToReturn.formlyDesciption = CtrlModalModel.controls[i].formlyDesciption;
+                            modelToReturn.formlyPlaceholder = CtrlModalModel.controls[i].formlyPlaceholder;
+                            modelToReturn.formlyOptions = CtrlModalModel.controls[i].formlyOptions;
 
-						modelToReturn.formlyExpressionProperties = angular.copy(CtrlModalModel.controls[i].formlyExpressionProperties);
-						modelToReturn.formlyValidators = angular.copy(CtrlModalModel.controls[i].formlyValidators);
-						modelToReturn.formlyValidation = angular.copy(CtrlModalModel.controls[i].formlyValidation);
+                            modelToReturn.formlyExpressionProperties = angular.copy(CtrlModalModel.controls[i].formlyExpressionProperties);
+                            modelToReturn.formlyValidators = angular.copy(CtrlModalModel.controls[i].formlyValidators);
+                            modelToReturn.formlyValidation = angular.copy(CtrlModalModel.controls[i].formlyValidation);
 
-						//particular properties
-						//datetpicker format
-						if (CtrlModalModel.controls[i].formlyType === 'datepicker') {
-							modelToReturn.datepickerPopup = CtrlModalModel.controls[i].datepickerPopup;
-						}
-					}
-				}
-				return modelToReturn;
-			};
+                            //particular properties
+                            //datetpicker format
+                            if (CtrlModalModel.controls[i].formlyType === 'datepicker') {
+                                modelToReturn.datepickerPopup = CtrlModalModel.controls[i].datepickerPopup;
+                            }
+                        }
+                    }
+                    return modelToReturn;
+                };
 
-			/**
-   	* validKeyUniqueness
-   	* to be sure the "keys" are unique (in same formly field model)
-   	*/
+                /**
+                 * validKeyUniqueness
+                 * to be sure the "keys" are unique (in same formly field model)
+                 */
 
-			validKeyUniqueness = function validKeyUniqueness(thisKey, configurationObj) {
-				var isUnique = true;
-				//each lines
-				for (var i = configurationObj.lines.length - 1; i >= 0; i--) {
-					//each columns
-					for (var j = configurationObj.lines[i].columns.length - 1; j >= 0; j--) {
-						if (configurationObj.lines[i].columns[j].control.key === thisKey) {
-							isUnique = false;
-						}
-					}
-				}
-				return isUnique;
-			};
+                validKeyUniqueness = function validKeyUniqueness(thisKey, configurationObj) {
+                    var isUnique = true;
+                    //each lines
+                    for (var i = configurationObj.lines.length - 1; i >= 0; i--) {
+                        //each columns
+                        for (var j = configurationObj.lines[i].columns.length - 1; j >= 0; j--) {
+                            if (configurationObj.lines[i].columns[j].control.key === thisKey) {
+                                isUnique = false;
+                            }
+                        }
+                    }
+                    return isUnique;
+                };
 
-			_export('resetNyaSelect', resetNyaSelect);
+                _export('resetNyaSelect', resetNyaSelect);
 
-			_export('returnControlFromAddCtrlModalModel', returnControlFromAddCtrlModalModel);
+                _export('returnControlFromAddCtrlModalModel', returnControlFromAddCtrlModalModel);
 
-			_export('validKeyUniqueness', validKeyUniqueness);
+                _export('validKeyUniqueness', validKeyUniqueness);
 
-			_export('getResetConfig', getResetConfig);
-		}
-	};
+                _export('getResetConfig', getResetConfig);
+            }
+        };
 });
-$__System.register('1f', ['13', '14', '1e'], function (_export) {
+    $__System.register('1c', ['15', '16', '1b'], function (_export) {
 	var _createClass, _classCallCheck, resetNyaSelect, returnControlFromAddCtrlModalModel, validKeyUniqueness, getResetConfig, CONTROLLER_MODAL_PROXY_SERVICE, $modalProxy;
 
 	return {
@@ -2914,11 +2899,11 @@ $__System.register('1f', ['13', '14', '1e'], function (_export) {
 			_createClass = _['default'];
 		}, function (_2) {
 			_classCallCheck = _2['default'];
-		}, function (_e) {
-			resetNyaSelect = _e.resetNyaSelect;
-			returnControlFromAddCtrlModalModel = _e.returnControlFromAddCtrlModalModel;
-			validKeyUniqueness = _e.validKeyUniqueness;
-			getResetConfig = _e.getResetConfig;
+        }, function (_b) {
+            resetNyaSelect = _b.resetNyaSelect;
+            returnControlFromAddCtrlModalModel = _b.returnControlFromAddCtrlModalModel;
+            validKeyUniqueness = _b.validKeyUniqueness;
+            getResetConfig = _b.getResetConfig;
 		}],
 		execute: function () {
 			/* global angular */
@@ -3168,15 +3153,15 @@ $__System.register('1f', ['13', '14', '1e'], function (_export) {
 		}
 	};
 });
-$__System.register('20', ['1f'], function (_export) {
+    $__System.register('1d', ['1c'], function (_export) {
 									/* global angular */
 									'use strict';
 
 									var $modalProxy, CONTROLLER_MODAL_PROXY_SERVICE, MODAL_PROXY_MODULE_NAME;
 									return {
-																		setters: [function (_f) {
-																											$modalProxy = _f['default'];
-																											CONTROLLER_MODAL_PROXY_SERVICE = _f.CONTROLLER_MODAL_PROXY_SERVICE;
+                                        setters: [function (_c) {
+                                            $modalProxy = _c['default'];
+                                            CONTROLLER_MODAL_PROXY_SERVICE = _c.CONTROLLER_MODAL_PROXY_SERVICE;
 																		}],
 																		execute: function () {
 																											MODAL_PROXY_MODULE_NAME = 'modalProxyModule';
@@ -3185,7 +3170,7 @@ $__System.register('20', ['1f'], function (_export) {
 																		}
 									};
 });
-$__System.register('21', [], function (_export) {
+    $__System.register('1e', [], function (_export) {
 	/* global angular */
 
 	'use strict';
@@ -3556,7 +3541,7 @@ $__System.register('21', [], function (_export) {
 		}
 	};
 });
-$__System.register('22', ['13', '14', '21'], function (_export) {
+    $__System.register('1f', ['15', '16', '1e'], function (_export) {
 	var _createClass, _classCallCheck, configurationModelInit, configurationModelResult, resetDataModel, resetFormlyModel, isTemplateOptionDefined, extractTemplateOptionLabel, extractTemplateOptionDatepickerPopup, extractFormlyExpressionProperties, extractFormlyValidators, extractFormlyValidation, extractTemplateOptionRequired, extractTemplateOptionOptions, extractTemplateOptionType, extractTemplateOptionPlaceholder, extractTemplateOptionDescription, addDatepickerPopupProperty, addOneColumnHeader, addOneColumnControl, addTwoColumnControl, addThreeColumnControl, FORMLY_PROXY_SERVICE, $formlyProxy;
 
 	return {
@@ -3564,27 +3549,27 @@ $__System.register('22', ['13', '14', '21'], function (_export) {
 			_createClass = _['default'];
 		}, function (_2) {
 			_classCallCheck = _2['default'];
-		}, function (_3) {
-			configurationModelInit = _3.configurationModelInit;
-			configurationModelResult = _3.configurationModelResult;
-			resetDataModel = _3.resetDataModel;
-			resetFormlyModel = _3.resetFormlyModel;
-			isTemplateOptionDefined = _3.isTemplateOptionDefined;
-			extractTemplateOptionLabel = _3.extractTemplateOptionLabel;
-			extractTemplateOptionDatepickerPopup = _3.extractTemplateOptionDatepickerPopup;
-			extractFormlyExpressionProperties = _3.extractFormlyExpressionProperties;
-			extractFormlyValidators = _3.extractFormlyValidators;
-			extractFormlyValidation = _3.extractFormlyValidation;
-			extractTemplateOptionRequired = _3.extractTemplateOptionRequired;
-			extractTemplateOptionOptions = _3.extractTemplateOptionOptions;
-			extractTemplateOptionType = _3.extractTemplateOptionType;
-			extractTemplateOptionPlaceholder = _3.extractTemplateOptionPlaceholder;
-			extractTemplateOptionDescription = _3.extractTemplateOptionDescription;
-			addDatepickerPopupProperty = _3.addDatepickerPopupProperty;
-			addOneColumnHeader = _3.addOneColumnHeader;
-			addOneColumnControl = _3.addOneColumnControl;
-			addTwoColumnControl = _3.addTwoColumnControl;
-			addThreeColumnControl = _3.addThreeColumnControl;
+        }, function (_e) {
+            configurationModelInit = _e.configurationModelInit;
+            configurationModelResult = _e.configurationModelResult;
+            resetDataModel = _e.resetDataModel;
+            resetFormlyModel = _e.resetFormlyModel;
+            isTemplateOptionDefined = _e.isTemplateOptionDefined;
+            extractTemplateOptionLabel = _e.extractTemplateOptionLabel;
+            extractTemplateOptionDatepickerPopup = _e.extractTemplateOptionDatepickerPopup;
+            extractFormlyExpressionProperties = _e.extractFormlyExpressionProperties;
+            extractFormlyValidators = _e.extractFormlyValidators;
+            extractFormlyValidation = _e.extractFormlyValidation;
+            extractTemplateOptionRequired = _e.extractTemplateOptionRequired;
+            extractTemplateOptionOptions = _e.extractTemplateOptionOptions;
+            extractTemplateOptionType = _e.extractTemplateOptionType;
+            extractTemplateOptionPlaceholder = _e.extractTemplateOptionPlaceholder;
+            extractTemplateOptionDescription = _e.extractTemplateOptionDescription;
+            addDatepickerPopupProperty = _e.addDatepickerPopupProperty;
+            addOneColumnHeader = _e.addOneColumnHeader;
+            addOneColumnControl = _e.addOneColumnControl;
+            addTwoColumnControl = _e.addTwoColumnControl;
+            addThreeColumnControl = _e.addThreeColumnControl;
 		}],
 		execute: function () {
 			/* global angular */
@@ -3669,15 +3654,15 @@ $__System.register('22', ['13', '14', '21'], function (_export) {
 		}
 	};
 });
-$__System.register('23', ['22'], function (_export) {
+    $__System.register('20', ['1f'], function (_export) {
 									/* global angular */
 									'use strict';
 
 									var $formlyProxy, FORMLY_PROXY_SERVICE, FORMLY_PROXY_MODULE_NAME;
 									return {
-																		setters: [function (_) {
-																											$formlyProxy = _['default'];
-																											FORMLY_PROXY_SERVICE = _.FORMLY_PROXY_SERVICE;
+                                        setters: [function (_f) {
+                                            $formlyProxy = _f['default'];
+                                            FORMLY_PROXY_SERVICE = _f.FORMLY_PROXY_SERVICE;
 																		}],
 																		execute: function () {
 																											FORMLY_PROXY_MODULE_NAME = 'formlyProxyModule';
@@ -3686,7 +3671,103 @@ $__System.register('23', ['22'], function (_export) {
 																		}
 									};
 });
-$__System.register('24', ['13', '14'], function (_export) {
+    $__System.registerDynamic("21", [], true, function ($__require, exports, module) {
+        ;
+        var global = this,
+            __define = global.define;
+        global.define = undefined;
+        var $Object = Object;
+        module.exports = {
+            create: $Object.create,
+            getProto: $Object.getPrototypeOf,
+            isEnum: {}.propertyIsEnumerable,
+            getDesc: $Object.getOwnPropertyDescriptor,
+            setDesc: $Object.defineProperty,
+            setDescs: $Object.defineProperties,
+            getKeys: $Object.keys,
+            getNames: $Object.getOwnPropertyNames,
+            getSymbols: $Object.getOwnPropertySymbols,
+            each: [].forEach
+        };
+        global.define = __define;
+        return module.exports;
+    });
+
+    $__System.registerDynamic("22", ["21"], true, function ($__require, exports, module) {
+        ;
+        var global = this,
+            __define = global.define;
+        global.define = undefined;
+        var $ = $__require('21');
+        module.exports = function defineProperty(it, key, desc) {
+            return $.setDesc(it, key, desc);
+        };
+        global.define = __define;
+        return module.exports;
+    });
+
+    $__System.registerDynamic("23", ["22"], true, function ($__require, exports, module) {
+        ;
+        var global = this,
+            __define = global.define;
+        global.define = undefined;
+        module.exports = {
+            "default": $__require('22'),
+            __esModule: true
+        };
+        global.define = __define;
+        return module.exports;
+    });
+
+    $__System.registerDynamic("15", ["23"], true, function ($__require, exports, module) {
+        "use strict";
+        ;
+        var global = this,
+            __define = global.define;
+        global.define = undefined;
+        var _Object$defineProperty = $__require('23')["default"];
+        exports["default"] = (function () {
+            function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var descriptor = props[i];
+                    descriptor.enumerable = descriptor.enumerable || false;
+                    descriptor.configurable = true;
+                    if ("value" in descriptor)
+                        descriptor.writable = true;
+                    _Object$defineProperty(target, descriptor.key, descriptor);
+                }
+            }
+
+            return function (Constructor, protoProps, staticProps) {
+                if (protoProps)
+                    defineProperties(Constructor.prototype, protoProps);
+                if (staticProps)
+                    defineProperties(Constructor, staticProps);
+                return Constructor;
+            };
+        })();
+        exports.__esModule = true;
+        global.define = __define;
+        return module.exports;
+    });
+
+    $__System.registerDynamic("16", [], true, function ($__require, exports, module) {
+        "use strict";
+        ;
+        var global = this,
+            __define = global.define;
+        global.define = undefined;
+        exports["default"] = function (instance, Constructor) {
+            if (!(instance instanceof Constructor)) {
+                throw new TypeError("Cannot call a class as a function");
+            }
+        };
+        exports.__esModule = true;
+        global.define = __define;
+        return module.exports;
+    });
+
+    $__System.register('24', ['15', '16'], function (_export) {
 	var _createClass, _classCallCheck, SELECT_OPTION_MANAGE_NAME, selectOptionManage;
 
 	return {
@@ -3954,42 +4035,43 @@ $__System.register('25', ['24'], function (_export) {
 																		}
 									};
 });
-$__System.register('1', ['2', '4', '6', '20', '23', '25', 'e', 'f', '1c', '1d'], function (_export) {
-	/* global angular */
+    $__System.register('1', ['2', '4', '6', '19', '20', '25', 'e', 'f', '1a', '1d'], function (_export) {
+        /* global angular */
 
-	'use strict';
+        'use strict';
 
-	var easyFormStepWayConfig, EASY_FORM_VERSION_NAME, EASY_FORM_VERSION_VALUE, formlyConfig, easyFormStepwayModalProxyModule, easyFormStepwayFormlyProxyModule, easyFormStepwayCommonModules, translateConfig, easyFormStepWayCoreModule, easyFormStepwayMainModule, easyFormStepwayModalModule, STEP_WAY_MODULE_NAME, STEP_WAY_MODULES_INJECT, mainModule;
-	return {
-		setters: [function (_) {}, function (_2) {
-			easyFormStepWayConfig = _2['default'];
-			EASY_FORM_VERSION_NAME = _2.EASY_FORM_VERSION_NAME;
-			EASY_FORM_VERSION_VALUE = _2.EASY_FORM_VERSION_VALUE;
-		}, function (_3) {
-			formlyConfig = _3['default'];
-		}, function (_4) {
-			easyFormStepwayModalProxyModule = _4['default'];
-		}, function (_5) {
-			easyFormStepwayFormlyProxyModule = _5['default'];
-		}, function (_6) {
-			easyFormStepwayCommonModules = _6['default'];
-		}, function (_e) {
-			translateConfig = _e['default'];
-		}, function (_f) {
-			easyFormStepWayCoreModule = _f['default'];
-		}, function (_c) {
-			easyFormStepwayMainModule = _c['default'];
-		}, function (_d) {
-			easyFormStepwayModalModule = _d['default'];
-		}],
-		execute: function () {
-			STEP_WAY_MODULE_NAME = 'eda.easyformGen.stepway';
-			STEP_WAY_MODULES_INJECT = [easyFormStepWayCoreModule.name, translateConfig.name, easyFormStepwayMainModule.name, easyFormStepwayModalModule.name, easyFormStepwayModalProxyModule.name, easyFormStepwayFormlyProxyModule.name, easyFormStepwayCommonModules.name];
-			mainModule = angular.module(STEP_WAY_MODULE_NAME, STEP_WAY_MODULES_INJECT).value(EASY_FORM_VERSION_NAME, EASY_FORM_VERSION_VALUE).config(formlyConfig).config(easyFormStepWayConfig);
+        var easyFormStepWayConfig, EASY_FORM_VERSION_NAME, EASY_FORM_VERSION_VALUE, formlyConfig, easyFormStepwayMainModule, easyFormStepwayFormlyProxyModule, easyFormStepwayCommonModules, translateConfig, easyFormStepWayCoreModule, easyFormStepwayModalModule, easyFormStepwayModalProxyModule, STEP_WAY_MODULE_NAME, STEP_WAY_MODULES_INJECT, mainModule;
+        return {
+            setters: [function (_) {
+            }, function (_2) {
+                easyFormStepWayConfig = _2['default'];
+                EASY_FORM_VERSION_NAME = _2.EASY_FORM_VERSION_NAME;
+                EASY_FORM_VERSION_VALUE = _2.EASY_FORM_VERSION_VALUE;
+            }, function (_3) {
+                formlyConfig = _3['default'];
+            }, function (_4) {
+                easyFormStepwayMainModule = _4['default'];
+            }, function (_5) {
+                easyFormStepwayFormlyProxyModule = _5['default'];
+            }, function (_6) {
+                easyFormStepwayCommonModules = _6['default'];
+            }, function (_e) {
+                translateConfig = _e['default'];
+            }, function (_f) {
+                easyFormStepWayCoreModule = _f['default'];
+            }, function (_a) {
+                easyFormStepwayModalModule = _a['default'];
+            }, function (_d) {
+                easyFormStepwayModalProxyModule = _d['default'];
+            }],
+            execute: function () {
+                STEP_WAY_MODULE_NAME = 'eda.easyformGen.stepway';
+                STEP_WAY_MODULES_INJECT = [easyFormStepWayCoreModule.name, translateConfig.name, easyFormStepwayMainModule.name, easyFormStepwayModalModule.name, easyFormStepwayModalProxyModule.name, easyFormStepwayFormlyProxyModule.name, easyFormStepwayCommonModules.name];
+                mainModule = angular.module(STEP_WAY_MODULE_NAME, STEP_WAY_MODULES_INJECT).value(EASY_FORM_VERSION_NAME, EASY_FORM_VERSION_VALUE).config(formlyConfig).config(easyFormStepWayConfig);
 
-			_export('default', mainModule);
-		}
-	};
+                _export('default', mainModule);
+            }
+        };
 });
 })
 (function(factory) {
