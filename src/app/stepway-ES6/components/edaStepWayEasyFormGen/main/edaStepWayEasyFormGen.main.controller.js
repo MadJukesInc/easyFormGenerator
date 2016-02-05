@@ -21,10 +21,10 @@ class edaStepWayEasyFormGenController {
 	constructor	(
 		easyFormGenVersion,
 		$filter,
-		toaster, 
+		toaster,
 		$timeout,
-		$modal,
-		$log, 
+		$uibModal,
+		$log,
 		$formlyProxy,
 		$modalProxy,
 		easyFormSteWayConfig){
@@ -33,7 +33,7 @@ class edaStepWayEasyFormGenController {
 		this.$filter 							= $filter;
 		this.toaster 							= toaster;
 		this.$timeout 						= $timeout;
-		this.$modal 							= $modal;
+		this.$uibModal = $uibModal;
 		this.$log 								= $log;
 		this.$formlyProxy 				= $formlyProxy;
 		this.$modalProxy 					= $modalProxy;
@@ -250,7 +250,7 @@ class edaStepWayEasyFormGenController {
 			}			
 		});
 
-		let modalInstance = this.$modal.open(editControlModal);
+		let modalInstance = this.$uibModal.open(editControlModal);
 		modalInstance.result.then(
 			(modalAddCtrlModel) => {				
 				this.$modalProxy.bindConfigurationModelFromModalReturn(indexLine, numcolumn, modalAddCtrlModel, this.configuration);
@@ -318,7 +318,7 @@ const toInject = [
 	'$filter',
 	'toaster', 
 	'$timeout',
-	'$modal',
+	'$uibModal',
 	'$log', 
 	'$formlyProxy',
 	'$modalProxy',

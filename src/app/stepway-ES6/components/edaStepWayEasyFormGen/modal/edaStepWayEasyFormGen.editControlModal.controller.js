@@ -5,13 +5,13 @@ const EDIT_MODAL_CONTROLLERAS_NAME = 'editControlModCtrl';
 
 class editControlModalController {
 
-    constructor($modalInstance,
+    constructor($uibModalInstance,
                 nyaSelect,
                 toaster,
                 selectOptionManage,
                 $modalProxy) {
 
-        this.$modalInstance = $modalInstance;
+        this.$uibModalInstance = $uibModalInstance;
         this.nyaSelect = nyaSelect;
         this.toaster = toaster;
         this.selectOptionManage = selectOptionManage;
@@ -354,11 +354,11 @@ class editControlModalController {
         //save config to control
         this.$modalProxy.applyConfigToSelectedControl(this.nyaSelect);
         //return current model to parent controller :
-        this.$modalInstance.close(this.nyaSelect);
+        this.$uibModalInstance.close(this.nyaSelect);
     }
 
     cancel() {
-        this.$modalInstance.dismiss('cancel');
+        this.$uibModalInstance.dismiss('cancel');
     }
 
 
@@ -425,7 +425,7 @@ class editControlModalController {
 
 
 const toInject = [
-    '$modalInstance',
+    '$uibModalInstance',
     'nyaSelect',
     'toaster',
     'selectOptionManage',
