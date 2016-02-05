@@ -1140,7 +1140,7 @@ $translateProvider.translations("tr", {
       '$anchorScroll',
       'toaster', 
       '$timeout',
-      '$modal',
+        '$uibModal',
       '$log', 
       'formFieldManage',
       'controllerModalProxy',
@@ -1148,19 +1148,18 @@ $translateProvider.translations("tr", {
     ];
 
     
-    function ngwfWfEditController(
-                                    $scope, 
-                                    $templateCache,
-                                    easyFormGenVersion,
-                                    $filter,
-                                    $anchorScroll,
-                                    toaster,
-                                    $timeout, 
-                                    $modal,
-                                    $log, 
-                                    formFieldManage, 
-                                    controllerModalProxy,
-                                    easyFormSteWayConfig
+    function ngwfWfEditController($scope,
+                                  $templateCache,
+                                  easyFormGenVersion,
+                                  $filter,
+                                  $anchorScroll,
+                                  toaster,
+                                  $timeout,
+                                  $uibModal,
+                                  $log,
+                                  formFieldManage,
+                                  controllerModalProxy,
+                                  easyFormSteWayConfig
                                     ){
       /*jshint validthis: true */
       $scope.vm                       = this;
@@ -1494,7 +1493,7 @@ $translateProvider.translations("tr", {
 
       function showModalAddCtrlToColumn(size, indexLine, numcolumn) {
 
-        var modalInstance = $modal.open({
+          var modalInstance = $uibModal.open({
                                           animation: $scope.animationsEnabled,
                                           templateUrl: 'editModalTemplate.html',  
                                           controller: 'ngwfWfEditMODALController',
@@ -1614,8 +1613,8 @@ $translateProvider.translations("tr", {
     .controller('ngwfWfEditMODALController', ngwfWfEditMODALController);
 
     ngwfWfEditMODALController.$inject = [
-      '$scope', 
-      '$modalInstance',
+        '$scope',
+        '$uibModalInstance',
       'nyaSelect',
       'toaster' ,
       '$timeout',
@@ -1623,13 +1622,13 @@ $translateProvider.translations("tr", {
       'controllerModalProxy',
     ];
 
-    function ngwfWfEditMODALController( $scope, 
-                                        $modalInstance, 
-                                        nyaSelect, 
-                                        toaster,
-                                        $timeout,
-                                        selectOptionManage,
-                                        controllerModalProxy
+    function ngwfWfEditMODALController($scope,
+                                       $uibModalInstance,
+                                       nyaSelect,
+                                       toaster,
+                                       $timeout,
+                                       selectOptionManage,
+                                       controllerModalProxy
                                       ){
       
       var initOptionModel = { rows:[] };
@@ -1942,11 +1941,11 @@ $translateProvider.translations("tr", {
         //save config to control
         controllerModalProxy.applyConfigToSelectedControl($scope.nyaSelect);
         //return current model to parent controller :
-        $modalInstance.close($scope.nyaSelect);
+          $uibModalInstance.close($scope.nyaSelect);
       }
 
       function cancelfct() {
-        $modalInstance.dismiss('cancel');
+          $uibModalInstance.dismiss('cancel');
       }    
 
 
@@ -2135,7 +2134,7 @@ $translateProvider.translations("tr", {
         '$anchorScroll',
         'toaster', 
         '$timeout',
-        '$modal',
+          '$uibModal',
         '$log', 
         'formFieldManage',
         'controllerModalProxy',
@@ -2305,19 +2304,18 @@ $translateProvider.translations("tr", {
                    
 			}
 			    
-    function edaStepWayEasyFormGenCtrl(
-                                    $scope, 
-                                    $templateCache,
-                                    easyFormGenVersion,
-                                    $filter,
-                                    $anchorScroll,
-                                    toaster,
-                                    $timeout, 
-                                    $modal,
-                                    $log, 
-                                    formFieldManage,  
-                                    controllerModalProxy,
-                                    easyFormSteWayConfig
+    function edaStepWayEasyFormGenCtrl($scope,
+                                       $templateCache,
+                                       easyFormGenVersion,
+                                       $filter,
+                                       $anchorScroll,
+                                       toaster,
+                                       $timeout,
+                                       $uibModal,
+                                       $log,
+                                       formFieldManage,
+                                       controllerModalProxy,
+                                       easyFormSteWayConfig
                                     ){
       /*jshint validthis: true */
       $scope.vm                       = this;
@@ -2658,7 +2656,7 @@ $translateProvider.translations("tr", {
 
       function showModalAddCtrlToColumn(size, indexLine, numcolumn) {
 
-        var modalInstance = $modal.open({
+          var modalInstance = $uibModal.open({
                                           animation: $scope.animationsEnabled,
                                           templateUrl: 'editModalTemplate.html',  
                                           controller: 'ngwfWfEditMODALController',
