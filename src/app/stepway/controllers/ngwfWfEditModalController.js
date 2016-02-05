@@ -20,8 +20,8 @@
     .controller('ngwfWfEditMODALController', ngwfWfEditMODALController);
 
     ngwfWfEditMODALController.$inject = [
-      '$scope', 
-      '$modalInstance',
+      '$scope',
+      '$uibModalInstance',
       'nyaSelect',
       'toaster' ,
       '$timeout',
@@ -29,13 +29,13 @@
       'controllerModalProxy',
     ];
 
-    function ngwfWfEditMODALController( $scope, 
-                                        $modalInstance, 
-                                        nyaSelect, 
-                                        toaster,
-                                        $timeout,
-                                        selectOptionManage,
-                                        controllerModalProxy
+    function ngwfWfEditMODALController($scope,
+                                       $uibModalInstance,
+                                       nyaSelect,
+                                       toaster,
+                                       $timeout,
+                                       selectOptionManage,
+                                       controllerModalProxy
                                       ){
       
       var initOptionModel = { rows:[] };
@@ -348,11 +348,11 @@
         //save config to control
         controllerModalProxy.applyConfigToSelectedControl($scope.nyaSelect);
         //return current model to parent controller :
-        $modalInstance.close($scope.nyaSelect);
+        $uibModalInstance.close($scope.nyaSelect);
       }
 
       function cancelfct() {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       }    
 
 

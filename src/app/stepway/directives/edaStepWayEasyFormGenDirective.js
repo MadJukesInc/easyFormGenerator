@@ -41,7 +41,7 @@
         '$anchorScroll',
         'toaster', 
         '$timeout',
-        '$modal',
+          '$uibModal',
         '$log', 
         'formFieldManage',
         'controllerModalProxy',
@@ -212,18 +212,18 @@
 			}
 			    
     function edaStepWayEasyFormGenCtrl(
-                                    $scope, 
-                                    $templateCache,
-                                    easyFormGenVersion,
-                                    $filter,
-                                    $anchorScroll,
-                                    toaster,
-                                    $timeout, 
-                                    $modal,
-                                    $log, 
-                                    formFieldManage,  
-                                    controllerModalProxy,
-                                    easyFormSteWayConfig
+        $scope,
+        $templateCache,
+        easyFormGenVersion,
+        $filter,
+        $anchorScroll,
+        toaster,
+        $timeout,
+        $uibModal,
+        $log,
+        formFieldManage,
+        controllerModalProxy,
+        easyFormSteWayConfig
                                     ){
       /*jshint validthis: true */
       $scope.vm                       = this;
@@ -564,7 +564,7 @@
 
       function showModalAddCtrlToColumn(size, indexLine, numcolumn) {
 
-        var modalInstance = $modal.open({
+          var modalInstance = $uibModal.open({
                                           animation: $scope.animationsEnabled,
                                           templateUrl: 'editModalTemplate.html',  
                                           controller: 'ngwfWfEditMODALController',
