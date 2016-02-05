@@ -1148,18 +1148,19 @@ $translateProvider.translations("tr", {
     ];
 
     
-    function ngwfWfEditController($scope,
-                                  $templateCache,
-                                  easyFormGenVersion,
-                                  $filter,
-                                  $anchorScroll,
-                                  toaster,
-                                  $timeout,
-                                  $uibModal,
-                                  $log,
-                                  formFieldManage,
-                                  controllerModalProxy,
-                                  easyFormSteWayConfig
+    function ngwfWfEditController(
+        $scope,
+        $templateCache,
+        easyFormGenVersion,
+        $filter,
+        $anchorScroll,
+        toaster,
+        $timeout,
+        $uibModal,
+        $log,
+        formFieldManage,
+        controllerModalProxy,
+        easyFormSteWayConfig
                                     ){
       /*jshint validthis: true */
       $scope.vm                       = this;
@@ -1613,8 +1614,8 @@ $translateProvider.translations("tr", {
     .controller('ngwfWfEditMODALController', ngwfWfEditMODALController);
 
     ngwfWfEditMODALController.$inject = [
-        '$scope',
-        '$uibModalInstance',
+      '$scope',
+      '$uibModalInstance',
       'nyaSelect',
       'toaster' ,
       '$timeout',
@@ -1941,11 +1942,11 @@ $translateProvider.translations("tr", {
         //save config to control
         controllerModalProxy.applyConfigToSelectedControl($scope.nyaSelect);
         //return current model to parent controller :
-          $uibModalInstance.close($scope.nyaSelect);
+        $uibModalInstance.close($scope.nyaSelect);
       }
 
       function cancelfct() {
-          $uibModalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       }    
 
 
@@ -2304,18 +2305,19 @@ $translateProvider.translations("tr", {
                    
 			}
 			    
-    function edaStepWayEasyFormGenCtrl($scope,
-                                       $templateCache,
-                                       easyFormGenVersion,
-                                       $filter,
-                                       $anchorScroll,
-                                       toaster,
-                                       $timeout,
-                                       $uibModal,
-                                       $log,
-                                       formFieldManage,
-                                       controllerModalProxy,
-                                       easyFormSteWayConfig
+    function edaStepWayEasyFormGenCtrl(
+        $scope,
+        $templateCache,
+        easyFormGenVersion,
+        $filter,
+        $anchorScroll,
+        toaster,
+        $timeout,
+        $uibModal,
+        $log,
+        formFieldManage,
+        controllerModalProxy,
+        easyFormSteWayConfig
                                     ){
       /*jshint validthis: true */
       $scope.vm                       = this;
