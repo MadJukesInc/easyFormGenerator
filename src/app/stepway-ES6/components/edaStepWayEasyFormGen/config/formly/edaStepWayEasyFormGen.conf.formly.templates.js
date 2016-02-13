@@ -1,10 +1,9 @@
-
-const richTextTemplate = `<text-angular name="{{id}}" 
+const richTextTemplate = `<text-angular name="{{id}}"
 														class="richTextAngular" 
 														ng-model="model[options.key || index]">
 													</text-angular>`;
-								
-const blankTemplate = `<div></div>`;								
+
+const blankTemplate = `<div></div>`;
 
 const subTitleTemplate = `<div class="row">
 													<div class="">
@@ -21,7 +20,7 @@ const basicSelectTemplate = ` <ol  class="nya-bs-select col-sm-12 col-xs-12 col-
 										<li class="nya-bs-option" nya-bs-option="option in options.templateOptions.options">  
 											<a>{{option.name}}</a> 
 										</li>  
-									</ol>    ` ;
+									</ol>    `;
 
 const groupedSelectTemplate = `<ol class="nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12" 
 															ng-model="model[options.key || index]" 
@@ -42,7 +41,7 @@ const datepickerTemplate = `	<input  id="{{id}}"
 																			ng-model="model[options.key  || index]" 
 																			is-open="to.isOpen" 
 																			ng-click="to.isOpen = true" 
-																			datepicker-options="to.datepickerOptions" />`;
+																			uib-datepicker-options="to.datepickerOptions" />`;
 
 const validationTemplate = `
 	<div class="formly-template-wrapper form-group"
@@ -57,13 +56,13 @@ const validationTemplate = `
 					</div>
 				</div>
 			</div>`;
-								
+
 export {
-	richTextTemplate,
-	blankTemplate,
-	subTitleTemplate,
-	basicSelectTemplate,
-	groupedSelectTemplate,
-	datepickerTemplate,
-	validationTemplate
+    richTextTemplate,
+    blankTemplate,
+    subTitleTemplate,
+    basicSelectTemplate,
+    groupedSelectTemplate,
+    datepickerTemplate,
+    validationTemplate
 };

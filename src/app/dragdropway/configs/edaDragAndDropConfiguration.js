@@ -4,22 +4,22 @@
  *  ------------------------------------------------------
  *
  * configuration related to drag and drop
- * 
+ *
  * ——————————————————————————————————————————————
  * MIT (2015) - Erwan Datin (MacKentoch)
  * https://github.com/MacKentoch/easyFormGenerator
  * ——————————————————————————————————————————————
-**/
+ **/
 angular
-	.module('edaApp')
-	.config(['dragDropConfigProvider',
-	
-	function (dragDropConfigProvider) {
+    .module('edaApp')
+    .config(['dragDropConfigProvider',
 
-    dragDropConfigProvider.setItemsNotTocount({
-                                                //placeholder :         '',
-                                                itemBeingDragged :    'dndDraggingSource'    
-                                              });
- 
-	}]);
+        function (dragDropConfigProvider) {
+
+            dragDropConfigProvider.setItemsNotTocount({
+                //placeholder :         '',
+                itemBeingDragged: 'dndDraggingSource'
+            });
+
+        }]);
 

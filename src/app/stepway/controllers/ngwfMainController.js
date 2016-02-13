@@ -8,24 +8,24 @@
  * MIT (2015) - Erwan Datin (MacKentoch)
  * https://github.com/MacKentoch/easyFormGenerator
  * ——————————————————————————————————————————————
-**/
+ **/
 
 ;(function () {
-	'use strict';
+    'use strict';
 
-	angular
-		.module('ngwfApp.controllers.ngwfMainController', [])
-		.controller('ngwfMainController', ngwfMainController);
+    angular
+        .module('ngwfApp.controllers.ngwfMainController', [])
+        .controller('ngwfMainController', ngwfMainController);
 
-		ngwfMainController.$inject = ['$scope', '$timeout'];
-		function ngwfMainController($scope, $timeout){
-			
-			$scope.FormNameAsTest = 'initial_name';
-			
-			$timeout(function(){
-				$scope.FormNameAsTest = 'name changed after 3s';
-			}, 3000);
-		}
+    ngwfMainController.$inject = ['$scope', '$timeout'];
+    function ngwfMainController($scope, $timeout) {
+
+        $scope.FormNameAsTest = 'initial_name';
+
+        $timeout(function () {
+            $scope.FormNameAsTest = 'name changed after 3s';
+        }, 3000);
+    }
 
 })(); 
 

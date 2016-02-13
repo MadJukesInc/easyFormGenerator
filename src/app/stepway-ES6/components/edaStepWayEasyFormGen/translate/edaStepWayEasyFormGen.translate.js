@@ -7,13 +7,13 @@ import localJp from '../i18n/local-jp.json!json';
 
 const TRANSLATE_CONFIG = 'easyFormTranslateConfig';
 
-function translateConfig($translateProvider){
-	$translateProvider.translations('en', localEn);
-	$translateProvider.translations('fr', localFr);
-	$translateProvider.translations('es', localEs);
-	$translateProvider.translations('de', localDe);
-	$translateProvider.translations('tr', localTr);
-	$translateProvider.translations('jp', localJp);
+function translateConfig($translateProvider) {
+    $translateProvider.translations('en', localEn);
+    $translateProvider.translations('fr', localFr);
+    $translateProvider.translations('es', localEs);
+    $translateProvider.translations('de', localDe);
+    $translateProvider.translations('tr', localTr);
+    $translateProvider.translations('jp', localJp);
 }
 
 translateConfig.$inject = ['$translateProvider'];
